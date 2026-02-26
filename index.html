@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPON Tools Suite - AHSANUL KABIR</title>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Exo+2:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&family=Bebas+Neue&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --sb-bg: linear-gradient(175deg, #0f172a 0%, #1e1b4b 60%, #0f172a 100%);
+            --sb-border: rgba(139,92,246,0.2);
+            --sb-accent: #a78bfa;
+            --sb-accent2: #38bdf8;
+            --sb-text: #e0e7ff;
+            --sb-muted: rgba(199,210,254,0.4);
+            --sb-active-bg: rgba(167,139,250,0.15);
+
+            --body-bg: #f0f4ff;
+            --body-mesh: radial-gradient(ellipse at 20% 0%, rgba(139,92,246,0.08) 0%, transparent 50%),
+                         radial-gradient(ellipse at 80% 100%, rgba(56,189,248,0.07) 0%, transparent 50%),
+                         #f0f4ff;
+
+            --card-bg: #ffffff;
+            --card-border: rgba(139,92,246,0.12);
+            --card-shadow: 0 4px 24px rgba(99,102,241,0.08), 0 1px 4px rgba(0,0,0,0.05);
+
+            --input-bg: #f8f7ff;
+            --input-border: #ddd6fe;
+            --input-focus: #8b5cf6;
+            --input-text: #1e1b4b;
+            --label: #6d5fa6;
+            --text-primary: #1e1b4b;
+
+            --output-bg: #0f0a2a;
+            --output-text: #e2d9f3;
+            --output-border: rgba(139,92,246,0.35);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: var(--body-mesh);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* ════ SIDEBAR ════ */
+        .sidebar {
+            width: 225px;
+            min-width: 225px;
+            background: var(--sb-bg);
+            display: flex;
+            flex-direction: column;
+            padding: 20px 14px;
+            border-right: 1px solid var(--sb-border);
+            z-index: 100;
+            position: relative;
+            overflow: hidden;
+        }
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: -70px; left: -70px;
+            width: 230px; height: 230px;
+            background: radial-gradient(circle, rgba(167,139,250,0.13) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .sidebar::after {
+            content: '';
+            position: absolute;
+            bottom: 90px; right: -50px;
+            width: 170px; height: 170px;
+            background: radial-gradient(circle, rgba(56,189,248,0.09) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .sidebar-brand {
+            text-align: center;
+            padding-bottom: 18px;
+            margin-bottom: 18px;
+            border-bottom: 1px solid rgba(167,139,250,0.15);
+        }
+        .brand-icon {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #7c3aed, #2563eb);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 10px;
+            box-shadow: 0 6px 20px rgba(124,58,237,0.45);
+        }
+        .brand-icon i { color: #fff; font-size: 1.4em; }
+        .brand-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.05em;
+            font-weight: 900;
+            letter-spacing: 5px;
+            color: #a78bfa;
+            text-shadow: 0 0 28px rgba(167,139,250,0.55);
+        }
+        .brand-sub {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.75em;
+            color: var(--sb-muted);
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        .nav-section-label {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.6em;
+            letter-spacing: 2.5px;
+            color: rgba(167,139,250,0.38);
+            padding: 0 8px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        .nav-group { display: flex; flex-direction: column; gap: 7px; }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--sb-muted);
+            padding: 12px 14px;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 11px;
+            transition: all 0.22s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        .nav-btn-glow {
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 3px;
+            border-radius: 0 2px 2px 0;
+            background: linear-gradient(180deg, #a78bfa, #60a5fa);
+            opacity: 0;
+            transition: opacity 0.22s;
+        }
+        .nav-btn:hover { background: rgba(167,139,250,0.07); color: #c4b5fd; border-color: rgba(167,139,250,0.15); }
+        .nav-btn.active {
+            background: var(--sb-active-bg);
+            border-color: rgba(167,139,250,0.38);
+            color: #c4b5fd;
+            box-shadow: 0 2px 14px rgba(167,139,250,0.18);
+        }
+        .nav-btn.active .nav-btn-glow { opacity: 1; }
+
+        .nav-icon-wrap {
+            width: 32px; height: 32px;
+            border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1em;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+        .icon-v { background: rgba(139,92,246,0.15); color: #a78bfa; }
+        .icon-s { background: rgba(56,189,248,0.15); color: #38bdf8; }
+        .nav-btn.active .icon-v { background: rgba(139,92,246,0.28); }
+        .nav-btn.active .icon-s { background: rgba(56,189,248,0.28); }
+
+        .nav-text .tab-name {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.76em;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            display: block;
+            line-height: 1.25;
+        }
+        .nav-text .tab-desc {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 0.72em;
+            font-weight: 400;
+            opacity: 0.52;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            border-top: 1px solid rgba(167,139,250,0.1);
+            padding-top: 16px;
+            text-align: center;
+        }
+        .author-name {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.62em;
+            letter-spacing: 2px;
+            color: rgba(167,139,250,0.5);
+            margin-bottom: 4px;
+        }
+        .author-role {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 0.7em;
+            color: rgba(199,210,254,0.28);
+            letter-spacing: 1px;
+        }
+
+        /* ════ MAIN CONTENT ════ */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 22px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(139,92,246,0.25) transparent;
+        }
+
+        .app-wrapper {
+            display: none;
+            animation: fadeUp 0.32s ease;
+            max-width: 1040px;
+            margin: 0 auto;
+        }
+        .app-wrapper.active { display: block; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── HEADERS ── */
+        .app-header { text-align: center; margin-bottom: 18px; }
+
+        .title-onu {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.7em;
+            font-weight: 900;
+            letter-spacing: 5px;
+            background: linear-gradient(90deg, #7c3aed 0%, #2563eb 50%, #0ea5e9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 2px 10px rgba(124,58,237,0.2));
+        }
+        .title-lp {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.7em;
+	    font-weight: 900;
+            letter-spacing: 7px;
+            background: linear-gradient(90deg, #0ea5e9 0%, #8b5cf6 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 2px 10px rgba(139,92,246,0.2));
+        }
+        .app-subtitle {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.88em;
+            font-weight: 600;
+            letter-spacing: 3.5px;
+            color: #9ca3af;
+            text-transform: uppercase;
+            margin-top: 3px;
+        }
+
+        /* ── GRID ── */
+        .card-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        /* ── CARDS ── */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            border-radius: 16px 16px 0 0;
+        }
+        .card.violet-stripe::before { background: linear-gradient(90deg, #7c3aed, #4f46e5, #2563eb); }
+        .card.sky-stripe::before    { background: linear-gradient(90deg, #0ea5e9, #06b6d4, #10b981); }
+        .card.indigo-stripe::before { background: linear-gradient(90deg, #4f46e5, #7c3aed, #ec4899); }
+        .card::after {
+            content: '';
+            position: absolute;
+            top: -50px; right: -50px;
+            width: 160px; height: 160px;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .card.violet-stripe::after { background: radial-gradient(circle, rgba(124,58,237,0.035) 0%, transparent 70%); }
+        .card.sky-stripe::after    { background: radial-gradient(circle, rgba(14,165,233,0.035) 0%, transparent 70%); }
+        .card.indigo-stripe::after { background: radial-gradient(circle, rgba(79,70,229,0.035) 0%, transparent 70%); }
+
+        .card-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(139,92,246,0.1);
+        }
+        .ch-icon {
+            width: 32px; height: 32px;
+            border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.92em;
+            flex-shrink: 0;
+        }
+        .chi-v { background: linear-gradient(135deg,#ede9fe,#ddd6fe); color: #6d28d9; }
+        .chi-s { background: linear-gradient(135deg,#e0f2fe,#bae6fd); color: #0369a1; }
+        .chi-i { background: linear-gradient(135deg,#ede9fe,#e0e7ff); color: #4338ca; }
+        .chi-g { background: linear-gradient(135deg,#d1fae5,#a7f3d0); color: #065f46; }
+
+        .card-head-text {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.72em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #4c1d95;
+        }
+
+        /* ── FORM ── */
+        .input-row {
+            display: grid;
+            gap: 11px;
+            margin-bottom: 11px;
+        }
+        .col-2 { grid-template-columns: 1fr 1fr; }
+        .col-3 { grid-template-columns: 1fr 1fr 1fr; }
+        .col-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+        .field { display: flex; flex-direction: column; gap: 5px; }
+
+        label {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.82em;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--label);
+        }
+
+        input, select {
+            background: var(--input-bg);
+            border: 1.5px solid var(--input-border);
+            border-radius: 9px;
+            color: var(--input-text);
+            font-family: 'Exo 2', sans-serif;
+            font-size: 0.92em;
+            font-weight: 600;
+            padding: 8px 11px;
+            width: 100%;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+        input::placeholder { color: #c4b5fd; font-weight: 400; }
+        input:focus, select:focus {
+            border-color: var(--input-focus);
+            box-shadow: 0 0 0 3px rgba(139,92,246,0.1);
+        }
+        select { cursor: pointer; color: #3730a3; }
+        select option { color: #1e1b4b; font-weight: 500; }
+
+        .section-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.62em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #7c3aed;
+            background: #ede9fe;
+            border-radius: 20px;
+            padding: 4px 12px;
+            margin-bottom: 9px;
+            margin-top: 5px;
+        }
+
+        /* ── BUTTONS ── */
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .btn {
+            padding: 9px 18px;
+            border: none;
+            border-radius: 9px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.92em;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            transition: all 0.2s;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,0.14); }
+        .btn:active { transform: translateY(0); }
+
+        .btn-gen {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: #fff;
+            box-shadow: 0 3px 12px rgba(16,185,129,0.32);
+        }
+        .btn-clr {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: #fff;
+            box-shadow: 0 3px 12px rgba(239,68,68,0.32);
+        }
+        .btn-cpy {
+            background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+            color: #fff;
+            box-shadow: 0 3px 12px rgba(59,130,246,0.32);
+        }
+        .btn-cpy.copied {
+            background: linear-gradient(135deg, #065f46, #10b981);
+        }
+
+        /* ── OUTPUT ── */
+        .output-wrap {
+            background: var(--output-bg);
+            border: 1.5px solid var(--output-border);
+            border-radius: 11px;
+            padding: 14px 16px;
+            flex-grow: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        .output-wrap::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #7c3aed, #2563eb, #0ea5e9);
+            opacity: 0.75;
+        }
+        .output-dots {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 11px;
+        }
+        .output-dots span {
+            width: 9px; height: 9px;
+            border-radius: 50%;
+        }
+        .dot-red   { background: #f87171; }
+        .dot-amber { background: #fbbf24; }
+        .dot-green { background: #34d399; }
+
+        pre.output-area {
+            background: transparent;
+            border: none;
+            padding: 0;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.86em;
+            font-weight: 700;
+            line-height: 1.8;
+            color: #ede9fe;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            min-height: 150px;
+            letter-spacing: 0.2px;
+        }
+
+        textarea.output-area {
+            background: transparent;
+            border: none;
+            padding: 0;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.86em;
+            font-weight: 700;
+            line-height: 1.8;
+            color: #ede9fe;
+            width: 100%;
+            height: 200px;
+            resize: vertical;
+            outline: none;
+            letter-spacing: 0.2px;
+        }
+        textarea.output-area::placeholder {
+            color: rgba(167,139,250,0.28);
+            font-weight: 400;
+            font-style: italic;
+        }
+
+        /* ── TOAST ── */
+        .toast {
+            position: fixed;
+            bottom: 24px; left: 50%;
+            transform: translateX(-50%) translateY(70px);
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: #fff;
+            padding: 10px 26px;
+            border-radius: 30px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.95em;
+            font-weight: 700;
+            letter-spacing: 1px;
+            box-shadow: 0 8px 28px rgba(16,185,129,0.38);
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        @media (max-width: 800px) {
+            body { flex-direction: column; height: auto; overflow-y: auto; }
+            .sidebar { width: 100%; flex-direction: row; padding: 10px 14px; min-width: unset; align-items: center; }
+            .sidebar::before, .sidebar::after { display: none; }
+            .sidebar-brand, .sidebar-footer, .nav-section-label { display: none; }
+            .nav-group { flex-direction: row; }
+            .nav-text .tab-desc { display: none; }
+            .nav-btn { padding: 9px 13px; }
+            .main-content { padding: 12px; }
+            .card-grid { grid-template-columns: 1fr; }
+            .col-3, .col-4 { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">
+                <i class="material-icons">router</i>
+            </div>
+            <div class="brand-title">OLT</div>
+            <div class="brand-sub">Tools Suite</div>
+        </div>
+
+        <div class="nav-section-label">Tools</div>
+        <nav class="nav-group">
+            <button class="nav-btn active" onclick="switchTab('app-onu', this)">
+                <div class="nav-btn-glow"></div>
+                <div class="nav-icon-wrap icon-v">
+                    <i class="material-icons" style="font-size:16px">settings_input_component</i>
+                </div>
+                <div class="nav-text">
+                    <span class="tab-name">ONU ADD</span>
+                    <span class="tab-desc">Script Generator</span>
+                </div>
+            </button>
+            <button class="nav-btn" onclick="switchTab('app-lp', this)">
+                <div class="nav-btn-glow"></div>
+                <div class="nav-icon-wrap icon-s">
+                    <i class="fas fa-cogs" style="font-size:14px"></i>
+                </div>
+                <div class="nav-text">
+                    <span class="tab-name">LINE PROFILE</span>
+                    <span class="tab-desc">Profile Creator</span>
+                </div>
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="author-name">Ahsanul Kabir</div>
+            <div class="author-role">Link3 Techonologies Ltd.</div>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content">
+
+        <!-- APP 1: ONU ADD -->
+        <div id="app-onu" class="app-wrapper active">
+            <div class="app-header">
+                <div class="title-onu">ONU ADD SCRIPT</div>
+                <div class="app-subtitle">Prepared by Ahsanul Kabir</div>
+            </div>
+
+            <div class="card-grid">
+                <div class="card violet-stripe">
+                    <div class="card-head">
+                        <div class="ch-icon chi-v"><i class="material-icons" style="font-size:16px">tune</i></div>
+                        <span class="card-head-text">Configuration Inputs</span>
+                    </div>
+
+                    <div class="input-row col-2">
+                        <div class="field">
+                            <label for="olt-type">OLT Type</label>
+                            <select id="olt-type">
+                                <option value="vsol-gpon">VSOL GPON</option>
+                                <option value="cdata-gpon-16">CData GPON 16-PON</option>
+                                <option value="cdata-gpon-8">CData GPON 8-PON</option>
+                                <option value="utstarcom">UTStarcom</option>
+                                <option value="fh-net">FH-NET</option>
+                                <option value="phyhome">Phyhome</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="onu-ports">ONU Ports</label>
+                            <select id="onu-ports">
+                                <option value="1">1-Port</option>
+                                <option value="4">4-Ports</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-row col-3">
+                        <div class="field">
+                            <label for="slot">Slot</label>
+                            <input type="number" id="slot" value="0">
+                        </div>
+                        <div class="field">
+                            <label for="pon">PON Port</label>
+                            <input type="number" id="pon" placeholder="PON">
+                        </div>
+                        <div class="field">
+                            <label for="onu-id">ONU ID</label>
+                            <input type="number" id="onu-id" placeholder="ID">
+                        </div>
+                    </div>
+
+                    <div class="input-row col-2">
+                        <div class="field">
+                            <label for="onu-mac">ONU MAC Address</label>
+                            <input type="text" id="onu-mac" placeholder="e.g. AABBCCDDEEFF">
+                        </div>
+                        <div class="field">
+                            <label for="line-profile">Line Profile ID</label>
+                            <input type="number" id="line-profile" value="5">
+                        </div>
+                    </div>
+
+                    <div class="input-row col-2">
+                        <div class="field">
+                            <label for="gem-id">GEM ID</label>
+                            <input type="number" id="gem-id" value="1">
+                        </div>
+                        <div class="field">
+                            <label for="bandwidth">Bandwidth Rate</label>
+                            <select id="bandwidth">
+                                <option value="60">60 / 60 Mbps</option>
+                                <option value="100">100 / 100 Mbps</option>
+                                <option value="160">160 / 160 Mbps</option>
+                                <option value="210">210 / 210 Mbps</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="section-chip">
+                        <i class="material-icons" style="font-size:0.95em">tag</i> VLAN IDs
+                    </div>
+                    <div class="input-row col-4">
+                        <div class="field"><input type="text" id="vlan1" placeholder="VLAN 1" value=""></div>
+                        <div class="field"><input type="text" id="vlan2" placeholder="VLAN 2"></div>
+                        <div class="field"><input type="text" id="vlan3" placeholder="VLAN 3"></div>
+                        <div class="field"><input type="text" id="vlan4" placeholder="VLAN 4"></div>
+                    </div>
+
+                    <div class="btn-row">
+                        <button class="btn btn-gen" onclick="generateOnuScript()">
+                            <span class="material-icons" style="font-size:16px">play_arrow</span> Generate
+                        </button>
+                        <button class="btn btn-clr" onclick="clearOnuForm()">
+                            <span class="material-icons" style="font-size:16px">delete_outline</span> Clear
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card sky-stripe">
+                    <div class="card-head">
+                        <div class="ch-icon chi-s"><i class="material-icons" style="font-size:16px">code</i></div>
+                        <span class="card-head-text">Generated Script</span>
+                    </div>
+                    <div class="output-wrap" style="flex:1">
+                        <div class="output-dots">
+                            <span class="dot-red"></span>
+                            <span class="dot-amber"></span>
+                            <span class="dot-green"></span>
+                        </div>
+                        <pre id="output-script" class="output-area"></pre>
+                    </div>
+                    <div class="btn-row" style="justify-content:flex-end">
+                        <button id="copy-btn" class="btn btn-cpy" onclick="copyOnuScript()">
+                            <span class="material-icons" style="font-size:16px">content_copy</span>
+                            <span class="copy-text">Copy Script</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- APP 2: LINE PROFILE -->
+        <div id="app-lp" class="app-wrapper">
+            <div class="app-header">
+                <div class="title-lp">LINE PROFILE CREATE</div>
+                <div class="app-subtitle">Prepared by Ahsanul Kabir</div>
+            </div>
+
+            <div class="card-grid">
+                <div class="card indigo-stripe">
+                    <div class="card-head">
+                        <div class="ch-icon chi-i"><i class="fas fa-cogs" style="font-size:14px"></i></div>
+                        <span class="card-head-text">Profile Parameters</span>
+                    </div>
+
+                    <div class="input-row" style="grid-template-columns:1fr">
+                        <div class="field">
+                            <label for="oltName">OLT Name</label>
+                            <select id="oltName">
+                                <option value="cdata16">CDATA GPON 16-PON</option>
+                                <option value="cdata8">CDATA GPON 8-PON</option>
+                                <option value="vsol">VSOL / ATOP</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-row col-2">
+                        <div class="field">
+                            <label for="profileId">Line Profile ID</label>
+                            <input type="text" id="profileId" placeholder="e.g., 10">
+                        </div>
+                        <div class="field">
+                            <label for="gemMap">Gem Map</label>
+                            <input type="number" id="gemMap" min="1" max="8" value="1">
+                        </div>
+                    </div>
+
+                    <div class="section-chip">
+                        <i class="material-icons" style="font-size:0.95em">tag</i> VLAN IDs (up to 4)
+                    </div>
+                    <div class="input-row col-2">
+                        <div class="field"><input type="text" id="lp-vlan1" placeholder="VLAN 1"></div>
+                        <div class="field"><input type="text" id="lp-vlan2" placeholder="VLAN 2"></div>
+                        <div class="field"><input type="text" id="lp-vlan3" placeholder="VLAN 3"></div>
+                        <div class="field"><input type="text" id="lp-vlan4" placeholder="VLAN 4"></div>
+                    </div>
+
+                    <div class="btn-row" style="margin-top:16px">
+                        <button class="btn btn-gen" onclick="generateLineProfile()">
+                            <i class="fas fa-cogs" style="font-size:14px"></i> Generate
+                        </button>
+                        <button class="btn btn-clr" onclick="clearLPFields()">
+                            <i class="fas fa-broom" style="font-size:14px"></i> Clear
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card sky-stripe">
+                    <div class="card-head">
+                        <div class="ch-icon chi-g"><i class="material-icons" style="font-size:16px">terminal</i></div>
+                        <span class="card-head-text">Generated Script</span>
+                    </div>
+                    <div class="output-wrap" style="flex:1">
+                        <div class="output-dots">
+                            <span class="dot-red"></span>
+                            <span class="dot-amber"></span>
+                            <span class="dot-green"></span>
+                        </div>
+                        <textarea id="lp-output" class="output-area" readonly placeholder="Your generated script will appear here..."></textarea>
+                    </div>
+                    <div class="btn-row" style="justify-content:flex-end">
+                        <button class="btn btn-cpy" id="lp-copy-btn" onclick="copyLPScript()">
+                            <i class="far fa-copy" style="font-size:14px"></i>
+                            <span id="lp-copy-text">Copy Script</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        function switchTab(id, btn) {
+            document.querySelectorAll('.app-wrapper').forEach(a => a.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.style.background = type === 'error'
+                ? 'linear-gradient(135deg,#dc2626,#ef4444)'
+                : 'linear-gradient(135deg,#059669,#10b981)';
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2400);
+        }
+
+        function generateOnuScript() {
+            const oltType    = document.getElementById('olt-type').value;
+            const slot       = document.getElementById('slot').value;
+            const pon        = document.getElementById('pon').value;
+            const onuId      = document.getElementById('onu-id').value;
+            const onuPorts   = parseInt(document.getElementById('onu-ports').value, 10);
+            const onuMac     = document.getElementById('onu-mac').value;
+            const lineProfile= document.getElementById('line-profile').value;
+            const bandwidth  = parseInt(document.getElementById('bandwidth').value, 10);
+            const gemId      = document.getElementById('gem-id').value || '1';
+            const vlanList   = ['vlan1','vlan2','vlan3','vlan4'].map(id => document.getElementById(id).value.trim());
+
+            let script = '', srvProfileId = '';
+            if (oltType.startsWith('cdata-gpon')) srvProfileId = onuPorts === 4 ? '1' : '4';
+
+            switch (oltType) {
+                case 'vsol-gpon': {
+                    const mac = onuMac.replace(/[^a-zA-Z0-9]/g, '');
+                    script += `onu add ${onuId} profile ${onuPorts}_port_onu sn ${mac}\n`;
+                    script += `onu ${onuId} profile line id ${lineProfile}\n`;
+                    for (let i = 1; i <= onuPorts; i++) {
+                        const v = vlanList[i-1];
+                        if (v) {
+                            script += `onu ${onuId} eth ${i} state enable\n`;
+                            script += `onu ${onuId} portvlan eth ${i} mode tag vlan ${v} pri 0\n`;
+                            script += `onu ${onuId} eth ${i} loopdetect disable\n`;
+                        } else script += `onu ${onuId} eth ${i} state disable\n`;
+                    }
+                    for (let i = 1; i <= onuPorts; i++) {
+                        const v = vlanList[i-1];
+                        if (v) {
+                            const bk = bandwidth * 1024;
+                            script += `onu ${onuId} eth ${i} upstream-rate-limit cir ${bk} pir ${bk}\n`;
+                            script += `onu ${onuId} eth ${i} downstream-rate-limit cir ${bk} pir ${bk}\n`;
+                        }
+                    }
+                    script += `exit\n`;
+                    break;
+                }
+                case 'cdata-gpon-16': {
+                    script += `ont add ${pon} ${onuId} sn-auth ${onuMac} ont-lineprofile-id ${lineProfile} ont-srvprofile-id ${srvProfileId}\n`;
+                    if (onuPorts === 1) {
+                        const v = vlanList[0];
+                        if (v) {
+                            script += `ont port native-vlan ${pon} ${onuId} eth 1 vlan ${v}\n`;
+                            script += `ont port car ${pon} ${onuId} eth 1 inbound ${bandwidth} outbound ${bandwidth}\n`;
+                            script += `exit\n`;
+                            script += `service-port autoindex vlan ${v} gpon 0/0 port ${pon} ont ${onuId} gemport ${gemId} multi-service user-vlan ${v} tag-action transparent\n`;
+                        }
+                    } else {
+                        for (let i = 1; i <= 4; i++) {
+                            const v = vlanList[i-1];
+                            if (v) {
+                                script += `ont port native-vlan ${pon} ${onuId} eth ${i} vlan ${v}\n`;
+                                script += `ont port attribute ${pon} ${onuId} eth ${i} operational-state on\n`;
+                            } else script += `ont port attribute ${pon} ${onuId} eth ${i} operational-state off\n`;
+                        }
+                        for (let i = 1; i <= 4; i++) {
+                            const v = vlanList[i-1];
+                            if (v) script += `ont port car ${pon} ${onuId} eth ${i} inbound ${bandwidth} outbound ${bandwidth}\n`;
+                        }
+                        script += `exit\n`;
+                        vlanList.forEach(v => {
+                            if (v) script += `service-port autoindex vlan ${v} gpon 0/0 port ${pon} ont ${onuId} gemport ${gemId} multi-service user-vlan ${v} tag-action transparent\n`;
+                        });
+                    }
+                    break;
+                }
+                case 'cdata-gpon-8': {
+                    script += `ont add ${pon} ${onuId} sn-auth ${onuMac} ont-lineprofile-id ${lineProfile} ont-srvprofile-id ${srvProfileId}\n`;
+                    for (let i = 1; i <= onuPorts; i++) {
+                        const v = vlanList[i-1];
+                        if (v) {
+                            script += `ont port native-vlan ${pon} ${onuId} eth ${i} vlan ${v}\n`;
+                            script += `ont port attribute ${pon} ${onuId} eth ${i} operational-state on\n`;
+                        } else script += `ont port attribute ${pon} ${onuId} eth ${i} operational-state off\n`;
+                    }
+                    for (let i = 1; i <= onuPorts; i++) {
+                        const v = vlanList[i-1];
+                        if (v) script += `ont port car ${pon} ${onuId} eth ${i} inbound ${bandwidth} outbound ${bandwidth}\n`;
+                    }
+                    script += `exit\n`;
+                    break;
+                }
+                case 'utstarcom': {
+                    const mf = onuMac.length === 12 ? `${onuMac.substring(0,4)}-${onuMac.substring(4,12)}` : onuMac;
+                    script += `interface epon-olt ${slot}/${pon}\nonu ${onuId}\ndba-sla mac ${mf}\ndba-sla mac-limit 10\n`;
+                    for (let i = 1; i <= onuPorts; i++) {
+                        if (vlanList[i-1]) {
+                            script += `remote-mgmt eth ${i} admin enable\nremote-mgmt eth ${i} vlan-mode tag ${vlanList[i-1]} 8100\npolicing upstream pir-mark-no-drop\npolicing downstream pir-mark-no-drop\nshaping conform-to-pir\ndba-sla upstream maximum-bandwidth ${bandwidth*1024} Kbps\ndba-sla upstream max-burst 512 Kbps\ndba-sla downstream maximum-bandwidth ${bandwidth*1024} Kbps\ndba-sla downstream max-burst 512 Kbps\n`;
+                        } else script += `remote-mgmt eth ${i} admin disable\n`;
+                    }
+                    script += `exit\nexit\nexit\nconfigure management\nsave\n`;
+                    break;
+                }
+                case 'fh-net': {
+                    script += `onu ${slot}/${pon}/${onuId}\n`;
+                    for (let i = 1; i <= onuPorts; i++) {
+                        script += `interface ethernet 0/${i}\n`;
+                        if (vlanList[i-1]) {
+                            script += `no onu-shutdown\nonu-vlan-mode tag vlan ${vlanList[i-1]}\n`;
+                        } else script += `onu-shutdown\n`;
+                        script += `exit\n`;
+                    }
+                    script += `onu-bandwidth upstream fir 0 cir 0 pir ${bandwidth*1024}\nonu-bandwidth downstream fir 0 cir 0 pir ${bandwidth*1024}\nonu-bandwidth shaper pir\nexit\nexit\ncopy running-config startup-config\ny\n`;
+                    break;
+                }
+                case 'phyhome': {
+                    script += `service\nconfigure\n`;
+                    for (let i = 1; i <= onuPorts; i++) {
+                        const v = vlanList[i-1];
+                        if (v) {
+                            script += `service number ${slot} ${pon} ${onuId} 1 ${i}\ncustomer-vlan ${slot} ${pon} ${onuId} 1 ${i} tag 7 33024 ${v}\napply fe-service-compress-pkt ${slot} ${pon} ${onuId}\n`;
+                        }
+                        script += `onu-port-attribute ${slot} ${pon} ${onuId} ${i} ${v ? 'enable' : 'disable'}\n`;
+                    }
+                    for (let i = 1; i <= onuPorts; i++) {
+                        const v = vlanList[i-1];
+                        if (v) script += `port-policing-config ${slot} ${pon} ${onuId} ${i} up-state enable up-parameters 99328 16384 1024 down-state enable down-parameters 99328 99328\nexit\nsystem\nconfigure\nmax-mac-counter ${slot} ${pon} ${onuId} ${i} 10\n`;
+                    }
+                    script += `exit\nexit\nsave\n`;
+                    break;
+                }
+            }
+            document.getElementById('output-script').innerText = script;
+        }
+
+        function clearOnuForm() {
+            document.getElementById('olt-type').value  = 'cdata-gpon-16';
+            document.getElementById('onu-ports').value = '1';
+            document.getElementById('slot').value      = '0';
+            document.getElementById('line-profile').value = '5';
+            document.getElementById('gem-id').value    = '1';
+            document.getElementById('bandwidth').value = '100';
+            ['pon','onu-id','onu-mac','vlan1','vlan2','vlan3','vlan4'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('output-script').innerText = '';
+        }
+
+        function copyOnuScript() {
+            const text = document.getElementById('output-script').innerText;
+            const btn  = document.getElementById('copy-btn');
+            const ct   = btn.querySelector('.copy-text');
+            navigator.clipboard.writeText(text).then(() => {
+                btn.classList.add('copied'); ct.textContent = 'Copied!';
+                showToast('Script copied to clipboard!');
+                setTimeout(() => { btn.classList.remove('copied'); ct.textContent = 'Copy Script'; }, 2000);
+            }).catch(() => showToast('Copy failed', 'error'));
+        }
+
+        function generateLineProfile() {
+            const olt       = document.getElementById("oltName").value;
+            const profileId = document.getElementById("profileId").value.trim() || "10";
+            const vlans     = ['lp-vlan1','lp-vlan2','lp-vlan3','lp-vlan4']
+                                .map(id => document.getElementById(id).value.trim())
+                                .filter(v => v !== '');
+            let script = "";
+            if (olt === "vsol") {
+                let sp = '';
+                vlans.forEach((v, i) => sp += `service-port ${i+1} gemport 1 uservlan ${v} vlan ${v}\n`);
+                script = `profile line id ${profileId}\ntcont 1 name tcont_1 dba MAX_BW\ngemport 1 tcont 1\nservice 1 gemport 1 vlan ${vlans.join(",")}\n${sp}commit\nexit`;
+            } else if (olt === "cdata16") {
+                let gm = '';
+                vlans.forEach((v, i) => gm += `gem mapping 1 ${i+1} vlan ${v}\n`);
+                script = `ont-lineprofile gpon profile-id ${profileId}\ntcont 1 dba-profile-id 30\ngem add 1 tcont 1\n${gm}mapping-mode vlan\ncommit\nexit`;
+            } else if (olt === "cdata8") {
+                let gm = '';
+                vlans.forEach((v, i) => gm += `gem mapping 1 ${i+1} vlan ${v}\n`);
+                script = `ont-lineprofile profile-id ${profileId}\ntcont 1 dba-profile-id 30\ngem add 1 tcont 1\n${gm}mapping-mode vlan\ncommit\nexit`;
+            }
+            document.getElementById("lp-output").value = script;
+        }
+
+        function clearLPFields() {
+            ['profileId','lp-vlan1','lp-vlan2','lp-vlan3','lp-vlan4'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById("gemMap").value = "1";
+            document.getElementById("lp-output").value = "";
+        }
+
+        function copyLPScript() {
+            const output = document.getElementById("lp-output");
+            if (!output.value.trim()) { showToast("No script to copy!", "error"); return; }
+            const btn = document.getElementById('lp-copy-btn');
+            const ct  = document.getElementById('lp-copy-text');
+            navigator.clipboard.writeText(output.value).then(() => {
+                btn.classList.add('copied'); ct.textContent = 'Copied!';
+                showToast('Script copied to clipboard!');
+                setTimeout(() => { btn.classList.remove('copied'); ct.textContent = 'Copy Script'; }, 2000);
+            }).catch(() => showToast('Copy failed', 'error'));
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('olt-type').value  = 'cdata-gpon-16';
+            document.getElementById('bandwidth').value = '100';
+            generateOnuScript();
+        });
+    </script>
+</body>
+</html>
