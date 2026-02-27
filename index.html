@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPON Tools Suite - AHSANUL KABIR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>OLT Tools Suite - AHSANUL KABIR</title>
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -38,9 +38,17 @@
             --output-bg: #0f0a2a;
             --output-text: #e2d9f3;
             --output-border: rgba(139,92,246,0.35);
+
+            /* OLT Docs Theme */
+            --docs-bg: linear-gradient(135deg, #021B35 0%, #034B5D 50%, #067D7D 100%);
+            --docs-glass: rgba(255,255,255,0.95);
+            --docs-code-bg: #000000;
+            --docs-code-text: #00ff00;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+
+        html { height: 100%; overscroll-behavior: none; }
 
         body {
             font-family: 'Exo 2', sans-serif;
@@ -51,7 +59,50 @@
             overflow: hidden;
         }
 
-        /* ════ SIDEBAR ════ */
+        /* 3rd level sub-group */
+        .docs-sub-group { margin: 2px 0; }
+        .docs-sub-group-header {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.8em;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            color: rgba(153,246,228,0.85);
+            padding: 6px 10px;
+            cursor: pointer;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.15s;
+            border-left: 2px solid transparent;
+        }
+        .docs-sub-group-header:hover { background: rgba(0,255,157,0.07); border-left-color: rgba(0,255,157,0.3); }
+        .docs-sub-group-header.open { color: #fff; background: rgba(0,255,157,0.1); border-left-color: rgba(0,255,157,0.5); }
+        .sub-arrow2 { font-size: 0.75em; color: rgba(0,255,157,0.4); transition: transform 0.2s; }
+        .docs-sub-group-header.open .sub-arrow2 { transform: rotate(90deg); color: #00ff9d; }
+        .docs-sub-group-items { display: none; padding: 2px 0 4px 14px; flex-direction: column; gap: 2px; border-left: 1px solid rgba(0,255,157,0.1); margin-left: 10px; }
+        .docs-sub-group-items.open { display: flex; }
+        .docs-sub-btn-leaf { font-size: 0.76em !important; padding: 5px 10px !important; color: rgba(153,246,228,0.6) !important; }
+        .docs-sub-btn-leaf:hover { color: #fff !important; }
+        .docs-sub-btn-leaf.active { color: #00ff9d !important; }
+
+
+            padding: 10px 16px;
+            cursor: pointer;
+            font-family: 'Exo 2', sans-serif;
+            font-size: 0.9em;
+            color: #1e1b4b;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.15s;
+        }
+        .bts-suggestion:last-child { border-bottom: none; }
+        .bts-suggestion:hover { background: rgba(251,191,36,0.1); color: #d97706; font-weight: 600; }
+        .bts-suggestion::before { content: '📡'; font-size: 0.9em; }
+
+
         .sidebar {
             width: 225px;
             min-width: 225px;
@@ -63,6 +114,7 @@
             z-index: 100;
             position: relative;
             overflow: hidden;
+            overflow-y: auto;
         }
         .sidebar::before {
             content: '';
@@ -86,6 +138,7 @@
             padding-bottom: 18px;
             margin-bottom: 18px;
             border-bottom: 1px solid rgba(167,139,250,0.15);
+            flex-shrink: 0;
         }
         .brand-icon {
             width: 48px; height: 48px;
@@ -121,8 +174,9 @@
             padding: 0 8px;
             margin-bottom: 8px;
             text-transform: uppercase;
+            flex-shrink: 0;
         }
-        .nav-group { display: flex; flex-direction: column; gap: 7px; }
+        .nav-group { display: flex; flex-direction: column; gap: 7px; position: relative; }
 
         .nav-btn {
             background: transparent;
@@ -138,6 +192,7 @@
             gap: 12px;
             position: relative;
             overflow: hidden;
+            width: 100%;
         }
         .nav-btn-glow {
             position: absolute;
@@ -167,8 +222,10 @@
         }
         .icon-v { background: rgba(139,92,246,0.15); color: #a78bfa; }
         .icon-s { background: rgba(56,189,248,0.15); color: #38bdf8; }
+        .icon-g { background: rgba(0,255,157,0.12); color: #00ff9d; }
         .nav-btn.active .icon-v { background: rgba(139,92,246,0.28); }
         .nav-btn.active .icon-s { background: rgba(56,189,248,0.28); }
+        .nav-btn.active .icon-g { background: rgba(0,255,157,0.22); }
 
         .nav-text .tab-name {
             font-family: 'Orbitron', monospace;
@@ -187,11 +244,73 @@
             margin-top: 2px;
         }
 
+        /* OLT DOCS sub-nav in sidebar */
+        .docs-subnav {
+            display: none;
+            flex-direction: column;
+            gap: 0;
+            margin-top: 6px;
+            padding-left: 12px;
+            border-left: 2px solid rgba(0,255,157,0.15);
+            margin-left: 14px;
+        }
+        .docs-subnav.open { display: flex; }
+
+        .docs-subnav-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .docs-subnav-header {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.6em;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: rgba(0,212,255,0.6);
+            padding: 7px 8px 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 6px;
+            transition: background 0.18s;
+        }
+        .docs-subnav-header:hover { background: rgba(0,212,255,0.07); }
+        .docs-subnav-header .sub-arrow { font-size: 0.9em; transition: transform 0.25s; color: rgba(0,255,157,0.4); }
+        .docs-subnav-header.open .sub-arrow { transform: rotate(180deg); }
+
+        .docs-subnav-items {
+            display: none;
+            flex-direction: column;
+            gap: 2px;
+            padding: 2px 0 4px 8px;
+        }
+        .docs-subnav-items.open { display: flex; }
+
+        .docs-sub-btn {
+            background: transparent;
+            border: none;
+            color: rgba(153,246,228,0.7);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.79em;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            padding: 6px 10px;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.18s;
+            border-left: 2px solid transparent;
+        }
+        .docs-sub-btn:hover { background: rgba(0,255,157,0.08); color: #fff; border-left-color: rgba(0,255,157,0.4); }
+        .docs-sub-btn.active { background: rgba(0,255,157,0.12); color: #00ff9d; border-left-color: #00ff9d; }
+
         .sidebar-footer {
             margin-top: auto;
             border-top: 1px solid rgba(167,139,250,0.1);
             padding-top: 16px;
             text-align: center;
+            flex-shrink: 0;
         }
         .author-name {
             font-family: 'Orbitron', monospace;
@@ -216,6 +335,23 @@
             scrollbar-color: rgba(139,92,246,0.25) transparent;
         }
 
+        /* OLT DOCS mode - change main background */
+        body.docs-mode .main-content {
+            background: linear-gradient(135deg, #021B35 0%, #034B5D 50%, #067D7D 100%);
+            background-attachment: fixed;
+            padding: 0;
+            overflow-y: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        body.docs-mode .docs-content-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px 30px;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+        }
+
         .app-wrapper {
             display: none;
             animation: fadeUp 0.32s ease;
@@ -223,6 +359,15 @@
             margin: 0 auto;
         }
         .app-wrapper.active { display: block; }
+
+        /* OLT Docs wrapper - full height */
+        #app-docs {
+            display: none;
+            max-width: none;
+            margin: 0;
+            height: 100%;
+        }
+        #app-docs.active { display: flex; flex-direction: column; height: 100%; }
 
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(12px); }
@@ -246,7 +391,7 @@
         .title-lp {
             font-family: 'Orbitron', monospace;
             font-size: 1.7em;
-	    font-weight: 900;
+            font-weight: 900;
             letter-spacing: 7px;
             background: linear-gradient(90deg, #0ea5e9 0%, #8b5cf6 50%, #ec4899 100%);
             -webkit-background-clip: text;
@@ -293,17 +438,6 @@
         .card.violet-stripe::before { background: linear-gradient(90deg, #7c3aed, #4f46e5, #2563eb); }
         .card.sky-stripe::before    { background: linear-gradient(90deg, #0ea5e9, #06b6d4, #10b981); }
         .card.indigo-stripe::before { background: linear-gradient(90deg, #4f46e5, #7c3aed, #ec4899); }
-        .card::after {
-            content: '';
-            position: absolute;
-            top: -50px; right: -50px;
-            width: 160px; height: 160px;
-            border-radius: 50%;
-            pointer-events: none;
-        }
-        .card.violet-stripe::after { background: radial-gradient(circle, rgba(124,58,237,0.035) 0%, transparent 70%); }
-        .card.sky-stripe::after    { background: radial-gradient(circle, rgba(14,165,233,0.035) 0%, transparent 70%); }
-        .card.indigo-stripe::after { background: radial-gradient(circle, rgba(79,70,229,0.035) 0%, transparent 70%); }
 
         .card-head {
             display: flex;
@@ -418,24 +552,10 @@
         .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,0.14); }
         .btn:active { transform: translateY(0); }
 
-        .btn-gen {
-            background: linear-gradient(135deg, #059669, #10b981);
-            color: #fff;
-            box-shadow: 0 3px 12px rgba(16,185,129,0.32);
-        }
-        .btn-clr {
-            background: linear-gradient(135deg, #dc2626, #ef4444);
-            color: #fff;
-            box-shadow: 0 3px 12px rgba(239,68,68,0.32);
-        }
-        .btn-cpy {
-            background: linear-gradient(135deg, #1d4ed8, #3b82f6);
-            color: #fff;
-            box-shadow: 0 3px 12px rgba(59,130,246,0.32);
-        }
-        .btn-cpy.copied {
-            background: linear-gradient(135deg, #065f46, #10b981);
-        }
+        .btn-gen { background: linear-gradient(135deg, #059669, #10b981); color: #fff; box-shadow: 0 3px 12px rgba(16,185,129,0.32); }
+        .btn-clr { background: linear-gradient(135deg, #dc2626, #ef4444); color: #fff; box-shadow: 0 3px 12px rgba(239,68,68,0.32); }
+        .btn-cpy { background: linear-gradient(135deg, #1d4ed8, #3b82f6); color: #fff; box-shadow: 0 3px 12px rgba(59,130,246,0.32); }
+        .btn-cpy.copied { background: linear-gradient(135deg, #065f46, #10b981); }
 
         /* ── OUTPUT ── */
         .output-wrap {
@@ -455,15 +575,8 @@
             background: linear-gradient(90deg, #7c3aed, #2563eb, #0ea5e9);
             opacity: 0.75;
         }
-        .output-dots {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 11px;
-        }
-        .output-dots span {
-            width: 9px; height: 9px;
-            border-radius: 50%;
-        }
+        .output-dots { display: flex; gap: 6px; margin-bottom: 11px; }
+        .output-dots span { width: 9px; height: 9px; border-radius: 50%; }
         .dot-red   { background: #f87171; }
         .dot-amber { background: #fbbf24; }
         .dot-green { background: #34d399; }
@@ -498,11 +611,7 @@
             outline: none;
             letter-spacing: 0.2px;
         }
-        textarea.output-area::placeholder {
-            color: rgba(167,139,250,0.28);
-            font-weight: 400;
-            font-style: italic;
-        }
+        textarea.output-area::placeholder { color: rgba(167,139,250,0.28); font-weight: 400; font-style: italic; }
 
         /* ── TOAST ── */
         .toast {
@@ -524,17 +633,358 @@
         }
         .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-        @media (max-width: 800px) {
-            body { flex-direction: column; height: auto; overflow-y: auto; }
-            .sidebar { width: 100%; flex-direction: row; padding: 10px 14px; min-width: unset; align-items: center; }
+        /* ════ OLT DOCS STYLES ════ */
+        .docs-content-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+        }
+
+        .docs-tab-content {
+            display: none;
+            max-width: 1100px;
+            margin: 0 auto;
+            animation: fadeUp 0.4s ease-out;
+        }
+        .docs-tab-content.active { display: block; }
+
+        .docs-card {
+            background: var(--docs-glass);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        .docs-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, #00d4ff 0%, #00ff9d 100%);
+        }
+
+        .docs-card-header {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .docs-card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Exo 2', sans-serif;
+        }
+        .docs-card-title::before {
+            content: '';
+            display: block;
+            width: 6px; height: 24px;
+            background: linear-gradient(180deg, #00d4ff, #00ff9d);
+            border-radius: 3px;
+        }
+
+        .docs-olt-select, .docs-search-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            background-color: #fff;
+            color: #334155;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-family: 'Exo 2', sans-serif;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        .docs-olt-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2300ff9d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px top 50%;
+            background-size: 18px auto;
+        }
+        .docs-olt-select:focus, .docs-search-input:focus {
+            border-color: #00d4ff;
+            box-shadow: 0 0 0 3px rgba(0,212,255,0.1);
+            outline: none;
+        }
+
+        .docs-search-wrapper { position: relative; margin-bottom: 25px; }
+        .docs-search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+        .docs-search-input { padding-left: 45px; margin-bottom: 0; }
+
+        .docs-cmd-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #0f172a;
+            border-left: 4px solid #00ff9d;
+            padding: 8px 12px;
+            background: #f0fdf4;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.95rem;
+            margin-top: 25px;
+            font-family: 'Exo 2', sans-serif;
+            display: block;
+        }
+
+        .docs-code {
+            display: block;
+            padding: 18px;
+            background: #000;
+            border: 1px solid #1e293b;
+            border-radius: 6px;
+            margin-bottom: 30px;
+            white-space: pre-wrap;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.88rem;
+            color: #00ff00;
+            position: relative;
+            overflow-x: auto;
+            line-height: 1.6;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3), 0 0 10px rgba(0,255,0,0.1);
+            word-break: break-word;
+            transition: all 0.2s;
+        }
+        .docs-code:hover {
+            border-color: #00ff9d;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.4), 0 0 15px rgba(0,255,157,0.2);
+            transform: translateX(2px);
+        }
+        .docs-code.highlighted {
+            background: #002200;
+            border-color: #00ff9d;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(0,255,157,0.4);
+        }
+
+        /* OLT IP Table */
+        .docs-olt-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 10px;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #cbd5e1;
+            font-size: 0.9rem;
+        }
+        .docs-olt-table th, .docs-olt-table td {
+            padding: 14px 16px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+            font-family: 'Exo 2', sans-serif;
+        }
+        .docs-olt-table th {
+            background: #f1f5f9;
+            color: #00A36C;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            border-bottom: 2px solid #cbd5e1;
+        }
+        .docs-olt-table tr:hover { background-color: #f8fafc; }
+        .docs-olt-table td:nth-child(2) { color: #008793; font-weight: 700; }
+
+        /* ── ONU ADD compact (no-scroll) ── */
+        #app-onu { max-width: 1040px; margin: 0 auto; }
+        #app-onu .app-header { margin-bottom: 10px; }
+        #app-onu .app-header .title-onu { font-size: 1.35em; letter-spacing: 4px; }
+        #app-onu .app-header .app-subtitle { font-size: 0.78em; margin-top: 1px; }
+        #app-onu .card-grid { gap: 12px; }
+        #app-onu .card { padding: 14px 16px; }
+        #app-onu .card-head { margin-bottom: 10px; padding-bottom: 8px; }
+        #app-onu .input-row { gap: 8px; margin-bottom: 8px; }
+        #app-onu input, #app-onu select { padding: 6px 10px; font-size: 0.85em; }
+        #app-onu label { font-size: 0.90em; }
+        #app-onu .section-chip { font-size: 0.57em; padding: 3px 10px; margin-bottom: 7px; margin-top: 3px; }
+        #app-onu .btn-row { margin-top: 10px; gap: 8px; }
+        #app-onu .btn { padding: 7px 15px; font-size: 0.8em; }
+        #app-onu .output-wrap { padding: 10px 13px; }
+        #app-onu pre.output-area { font-size: 0.82em; min-height: 100px; line-height: 1.65; }
+
+
+
+        /* ── Tablet (≤900px) ── */
+        @media (max-width: 900px) {
+            .sidebar { width: 190px; min-width: 190px; padding: 14px 10px; }
+            .nav-text .tab-name { font-size: 0.68em; }
+            .nav-text .tab-desc { font-size: 0.65em; }
+            .main-content { padding: 14px 14px; }
+            .card-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+        }
+
+        /* ── Mobile (≤700px) ── */
+        @media (max-width: 700px) {
+            /* Body becomes column: top-bar + content */
+            body { flex-direction: column; height: 100dvh; overflow: hidden; }
+
+            /* ── SIDEBAR becomes top navigation bar ── */
+            .sidebar {
+                width: 100%;
+                min-width: unset;
+                height: auto;
+                flex-direction: column;
+                padding: 0;
+                border-right: none;
+                border-bottom: 1px solid var(--sb-border);
+                overflow: visible;
+                z-index: 200;
+                flex-shrink: 0;
+            }
             .sidebar::before, .sidebar::after { display: none; }
-            .sidebar-brand, .sidebar-footer, .nav-section-label { display: none; }
-            .nav-group { flex-direction: row; }
+            .sidebar-brand { display: none; }
+            .sidebar-footer { display: none; }
+            .nav-section-label { display: none; }
+
+            /* Mobile sidebar override */
+            .sidebar {
+                overflow: visible !important;
+                position: sticky;
+                top: 0;
+            }
+
+            /* Nav group = horizontal scrollable top bar */
+            .nav-group {
+                flex-direction: row;
+                overflow-x: auto;
+                overflow-y: visible;
+                padding: 8px 10px 0;
+                gap: 4px;
+                scrollbar-width: none;
+                -webkit-overflow-scrolling: touch;
+                flex-wrap: nowrap;
+                position: static;
+            }
+            .nav-group::-webkit-scrollbar { display: none; }
+
+            .nav-btn {
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 8px 12px;
+                gap: 4px;
+                flex-shrink: 0;
+                border-radius: 10px 10px 0 0;
+                min-width: 64px;
+                text-align: center;
+            }
+            .nav-icon-wrap { width: 26px; height: 26px; font-size: 0.85em; }
+            .nav-text { display: flex; flex-direction: column; align-items: center; }
+            .nav-text .tab-name { font-size: 0.56em; letter-spacing: 0.5px; }
             .nav-text .tab-desc { display: none; }
-            .nav-btn { padding: 9px 13px; }
-            .main-content { padding: 12px; }
-            .card-grid { grid-template-columns: 1fr; }
-            .col-3, .col-4 { grid-template-columns: 1fr 1fr; }
+            .nav-btn-glow { width: 100%; height: 3px; left: 0; bottom: 0; top: auto; border-radius: 2px 2px 0 0; }
+
+            /* Docs sub-nav: dropdown panel below topbar */
+            .docs-subnav {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: linear-gradient(180deg, #1e1b4b 0%, #0f172a 100%);
+                border-bottom: 1px solid var(--sb-border);
+                border-top: 1px solid rgba(167,139,250,0.15);
+                padding: 10px 14px;
+                z-index: 300;
+                max-height: 55vh;
+                overflow-y: auto;
+                scrollbar-width: thin;
+                scrollbar-color: rgba(167,139,250,0.3) transparent;
+                display: none;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            .docs-subnav.open {
+                display: flex !important;
+            }
+            .docs-subnav-group {
+                flex: 0 0 auto;
+            }
+            .docs-subnav-header {
+                font-size: 0.62em;
+                padding: 6px 10px;
+                white-space: nowrap;
+            }
+            .docs-subnav-items {
+                min-width: 130px;
+            }
+            .docs-sub-group-header {
+                font-size: 0.75em;
+                padding: 5px 8px;
+                white-space: nowrap;
+            }
+            .docs-sub-btn { font-size: 0.75em !important; padding: 5px 8px !important; white-space: nowrap; }
+            .docs-sub-btn-leaf { font-size: 0.72em !important; padding: 4px 8px !important; }
+
+            /* Main content fills remaining height */
+            .main-content {
+                flex: 1;
+                overflow-y: auto;
+                padding: 10px 10px;
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior: contain;
+            }
+            body.docs-mode .main-content { padding: 0; overflow: hidden; }
+            body.docs-mode .docs-content-scroll { padding: 12px; }
+
+            /* App wrappers */
+            .app-wrapper { max-width: 100%; }
+            .app-header { margin-bottom: 10px; }
+            .title-onu, .title-lp { font-size: 1.15em; letter-spacing: 3px; }
+            .app-subtitle { font-size: 0.75em; letter-spacing: 2px; }
+
+            /* Cards */
+            .card { padding: 12px; border-radius: 12px; }
+            .card-grid { grid-template-columns: 1fr; gap: 10px; }
+
+            /* ONU ADD compact */
+            .input-row { gap: 7px; margin-bottom: 7px; }
+            .col-2 { grid-template-columns: 1fr 1fr; }
+            .col-3 { grid-template-columns: 1fr 1fr 1fr; }
+            .col-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+            input, select { padding: 6px 9px; font-size: 0.82em; border-radius: 7px; }
+            label { font-size: 0.72em; }
+            .section-chip { font-size: 0.55em; padding: 3px 9px; }
+            .btn-row { margin-top: 8px; gap: 7px; }
+            .btn { padding: 7px 12px; font-size: 0.78em; }
+            pre.output-area { font-size: 0.75em; min-height: 80px; line-height: 1.6; }
+            textarea.output-area { font-size: 0.75em; height: 120px; }
+            .output-wrap { padding: 10px 12px; }
+
+            /* BTS table */
+            #bts-info-table th, #bts-info-table td { padding: 8px 10px; font-size: 0.78em; }
+
+            /* Docs */
+            .docs-card { padding: 16px; }
+            .docs-card-title { font-size: 1.1rem; }
+            .docs-cmd-label { font-size: 0.82rem; padding: 6px 10px; margin-top: 16px; }
+            .docs-code { font-size: 0.78rem; padding: 12px; }
+            .docs-olt-table th, .docs-olt-table td { padding: 8px 10px; font-size: 0.78rem; }
+        }
+
+        /* ── Small mobile (≤400px) ── */
+        @media (max-width: 400px) {
+            .col-3 { grid-template-columns: 1fr 1fr; }
+            .col-4 { grid-template-columns: 1fr 1fr; }
+            .title-onu, .title-lp { font-size: 1em; letter-spacing: 2px; }
+            .nav-btn { min-width: 56px; padding: 7px 8px; }
+            .nav-text .tab-name { font-size: 0.5em; }
         }
     </style>
 </head>
@@ -552,7 +1002,8 @@
 
         <div class="nav-section-label">Tools</div>
         <nav class="nav-group">
-            <button class="nav-btn active" onclick="switchTab('app-onu', this)">
+            <!-- ONU ADD -->
+            <button class="nav-btn active" id="nav-onu" onclick="switchTab('app-onu', this)">
                 <div class="nav-btn-glow"></div>
                 <div class="nav-icon-wrap icon-v">
                     <i class="material-icons" style="font-size:16px">settings_input_component</i>
@@ -562,7 +1013,9 @@
                     <span class="tab-desc">Script Generator</span>
                 </div>
             </button>
-            <button class="nav-btn" onclick="switchTab('app-lp', this)">
+
+            <!-- LINE PROFILE -->
+            <button class="nav-btn" id="nav-lp" onclick="switchTab('app-lp', this)">
                 <div class="nav-btn-glow"></div>
                 <div class="nav-icon-wrap icon-s">
                     <i class="fas fa-cogs" style="font-size:14px"></i>
@@ -570,6 +1023,126 @@
                 <div class="nav-text">
                     <span class="tab-name">LINE PROFILE</span>
                     <span class="tab-desc">Profile Creator</span>
+                </div>
+            </button>
+
+            <!-- OLT DOCS -->
+            <button class="nav-btn" id="nav-docs" onclick="switchToDocsTab(this)">
+                <div class="nav-btn-glow"></div>
+                <div class="nav-icon-wrap icon-g">
+                    <i class="material-icons" style="font-size:16px">menu_book</i>
+                </div>
+                <div class="nav-text">
+                    <span class="tab-name">OLT DOCS</span>
+                    <span class="tab-desc">Documentation</span>
+                </div>
+            </button>
+
+            <!-- Docs Sub Nav (visible when docs active) -->
+            <div class="docs-subnav" id="docs-subnav">
+                <!-- OLT IPs -->
+                <div class="docs-subnav-group">
+                    <div class="docs-subnav-header active" onclick="showDocsContent('d_olt_ips', this)">
+                        <span>📡 OLT IPs</span>
+                    </div>
+                </div>
+
+                <!-- GPON OLT -->
+                <div class="docs-subnav-group">
+                    <div class="docs-subnav-header" onclick="toggleDocsSub(this)">
+                        <span>🔷 GPON OLT</span>
+                        <span class="sub-arrow">▼</span>
+                    </div>
+                    <div class="docs-subnav-items">
+                        <!-- CDATA GPON 16 PORT -->
+                        <div class="docs-sub-group">
+                            <div class="docs-sub-group-header" onclick="toggleSubGroup(this)">
+                                <span>CDATA GPON 16</span>
+                                <span class="sub-arrow2">▶</span>
+                            </div>
+                            <div class="docs-sub-group-items">
+                                <button class="docs-sub-btn docs-sub-btn-leaf" onclick="showDocsContent('d_cdata_troubleshoot', this)">🔧 Troubleshoot</button>
+                                <button class="docs-sub-btn docs-sub-btn-leaf" onclick="showDocsContent('d_cdata_installation', this)">⚙️ Installation</button>
+                            </div>
+                        </div>
+                        <!-- CDATA GPON 8 PORT -->
+                        <div class="docs-sub-group">
+                            <div class="docs-sub-group-header" onclick="toggleSubGroup(this)">
+                                <span>CDATA GPON 8</span>
+                                <span class="sub-arrow2">▶</span>
+                            </div>
+                            <div class="docs-sub-group-items">
+                                <button class="docs-sub-btn docs-sub-btn-leaf" onclick="showDocsContent('d_gpon8_troubleshoot', this)">🔧 Troubleshoot</button>
+                                <button class="docs-sub-btn docs-sub-btn-leaf" onclick="showDocsContent('d_gpon8_installation', this)">⚙️ Installation</button>
+                            </div>
+                        </div>
+                        <!-- VSOL & ATOP -->
+                        <div class="docs-sub-group">
+                            <div class="docs-sub-group-header" onclick="toggleSubGroup(this)">
+                                <span>VSOL / ATOP</span>
+                                <span class="sub-arrow2">▶</span>
+                            </div>
+                            <div class="docs-sub-group-items">
+                                <button class="docs-sub-btn docs-sub-btn-leaf" onclick="showDocsContent('d_vsol_troubleshoot', this)">🔧 Troubleshoot</button>
+                                <button class="docs-sub-btn docs-sub-btn-leaf" onclick="showDocsContent('d_vsol_installation', this)">⚙️ Installation</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EPON OLT -->
+                <div class="docs-subnav-group">
+                    <div class="docs-subnav-header" onclick="toggleDocsSub(this)">
+                        <span>🟢 EPON OLT</span>
+                        <span class="sub-arrow">▼</span>
+                    </div>
+                    <div class="docs-subnav-items">
+                        <!-- UTSTAR -->
+                        <div class="docs-sub-group">
+                            <div class="docs-sub-group-header" onclick="toggleSubGroup(this)">
+                                <span>EPON UTSTAR</span>
+                                <span class="sub-arrow2">▶</span>
+                            </div>
+                            <div class="docs-sub-group-items">
+                                <button class="docs-sub-btn docs-sub-btn-leaf" onclick="showDocsContent('d_utstar_troubleshoot', this)">🔧 Troubleshoot</button>
+                                <button class="docs-sub-btn docs-sub-btn-leaf" onclick="showDocsContent('d_utstar_installation', this)">⚙️ Installation</button>
+                            </div>
+                        </div>
+                        <!-- PHYHOME -->
+                        <div class="docs-sub-group">
+                            <div class="docs-sub-group-header" onclick="toggleSubGroup(this)">
+                                <span>EPON PHYHOME</span>
+                                <span class="sub-arrow2">▶</span>
+                            </div>
+                            <div class="docs-sub-group-items">
+                                <button class="docs-sub-btn docs-sub-btn-leaf" onclick="showDocsContent('d_phyhome_troubleshoot', this)">🔧 Troubleshoot</button>
+                                <button class="docs-sub-btn docs-sub-btn-leaf" onclick="showDocsContent('d_phyhome_installation', this)">⚙️ Installation</button>
+                            </div>
+                        </div>
+                        <!-- FHNET -->
+                        <div class="docs-sub-group">
+                            <div class="docs-sub-group-header" onclick="toggleSubGroup(this)">
+                                <span>EPON FHNET</span>
+                                <span class="sub-arrow2">▶</span>
+                            </div>
+                            <div class="docs-sub-group-items">
+                                <button class="docs-sub-btn docs-sub-btn-leaf" onclick="showDocsContent('d_fhnet_troubleshoot', this)">🔧 Troubleshoot</button>
+                                <button class="docs-sub-btn docs-sub-btn-leaf" onclick="showDocsContent('d_fhnet_installation', this)">⚙️ Installation</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BTS INFO -->
+            <button class="nav-btn" id="nav-bts" onclick="switchTab('app-bts', this)">
+                <div class="nav-btn-glow"></div>
+                <div class="nav-icon-wrap" style="background:rgba(251,191,36,0.15);color:#fbbf24;">
+                    <i class="material-icons" style="font-size:16px">cell_tower</i>
+                </div>
+                <div class="nav-text">
+                    <span class="tab-name">BTS INFO</span>
+                    <span class="tab-desc">Router &amp; SW IPs</span>
                 </div>
             </button>
         </nav>
@@ -581,7 +1154,7 @@
     </aside>
 
     <!-- MAIN -->
-    <main class="main-content">
+    <main class="main-content" id="main-content">
 
         <!-- APP 1: ONU ADD -->
         <div id="app-onu" class="app-wrapper active">
@@ -589,14 +1162,12 @@
                 <div class="title-onu">ONU ADD SCRIPT</div>
                 <div class="app-subtitle">Prepared by Ahsanul Kabir</div>
             </div>
-
             <div class="card-grid">
                 <div class="card violet-stripe">
                     <div class="card-head">
                         <div class="ch-icon chi-v"><i class="material-icons" style="font-size:16px">tune</i></div>
                         <span class="card-head-text">Configuration Inputs</span>
                     </div>
-
                     <div class="input-row col-2">
                         <div class="field">
                             <label for="olt-type">OLT Type</label>
@@ -617,38 +1188,17 @@
                             </select>
                         </div>
                     </div>
-
                     <div class="input-row col-3">
-                        <div class="field">
-                            <label for="slot">Slot</label>
-                            <input type="number" id="slot" value="0">
-                        </div>
-                        <div class="field">
-                            <label for="pon">PON Port</label>
-                            <input type="number" id="pon" placeholder="PON">
-                        </div>
-                        <div class="field">
-                            <label for="onu-id">ONU ID</label>
-                            <input type="number" id="onu-id" placeholder="ID">
-                        </div>
+                        <div class="field"><label for="slot">Slot</label><input type="number" id="slot" value="0"></div>
+                        <div class="field"><label for="pon">PON Port</label><input type="number" id="pon" placeholder="PON"></div>
+                        <div class="field"><label for="onu-id">ONU ID</label><input type="number" id="onu-id" placeholder="ID"></div>
                     </div>
-
                     <div class="input-row col-2">
-                        <div class="field">
-                            <label for="onu-mac">ONU MAC Address</label>
-                            <input type="text" id="onu-mac" placeholder="e.g. AABBCCDDEEFF">
-                        </div>
-                        <div class="field">
-                            <label for="line-profile">Line Profile ID</label>
-                            <input type="number" id="line-profile" value="5">
-                        </div>
+                        <div class="field"><label for="onu-mac">ONU MAC Address</label><input type="text" id="onu-mac" placeholder="e.g. AABBCCDDEEFF"></div>
+                        <div class="field"><label for="line-profile">Line Profile ID</label><input type="number" id="line-profile" value="5"></div>
                     </div>
-
                     <div class="input-row col-2">
-                        <div class="field">
-                            <label for="gem-id">GEM ID</label>
-                            <input type="number" id="gem-id" value="1">
-                        </div>
+                        <div class="field"><label for="gem-id">GEM ID</label><input type="number" id="gem-id" value="1"></div>
                         <div class="field">
                             <label for="bandwidth">Bandwidth Rate</label>
                             <select id="bandwidth">
@@ -659,38 +1209,25 @@
                             </select>
                         </div>
                     </div>
-
-                    <div class="section-chip">
-                        <i class="material-icons" style="font-size:0.95em">tag</i> VLAN IDs
-                    </div>
+                    <div class="section-chip"><i class="material-icons" style="font-size:0.95em">tag</i> VLAN IDs</div>
                     <div class="input-row col-4">
-                        <div class="field"><input type="text" id="vlan1" placeholder="VLAN 1" value=""></div>
+                        <div class="field"><input type="text" id="vlan1" placeholder="VLAN 1"></div>
                         <div class="field"><input type="text" id="vlan2" placeholder="VLAN 2"></div>
                         <div class="field"><input type="text" id="vlan3" placeholder="VLAN 3"></div>
                         <div class="field"><input type="text" id="vlan4" placeholder="VLAN 4"></div>
                     </div>
-
                     <div class="btn-row">
-                        <button class="btn btn-gen" onclick="generateOnuScript()">
-                            <span class="material-icons" style="font-size:16px">play_arrow</span> Generate
-                        </button>
-                        <button class="btn btn-clr" onclick="clearOnuForm()">
-                            <span class="material-icons" style="font-size:16px">delete_outline</span> Clear
-                        </button>
+                        <button class="btn btn-gen" onclick="generateOnuScript()"><span class="material-icons" style="font-size:16px">play_arrow</span> Generate</button>
+                        <button class="btn btn-clr" onclick="clearOnuForm()"><span class="material-icons" style="font-size:16px">delete_outline</span> Clear</button>
                     </div>
                 </div>
-
                 <div class="card sky-stripe">
                     <div class="card-head">
                         <div class="ch-icon chi-s"><i class="material-icons" style="font-size:16px">code</i></div>
                         <span class="card-head-text">Generated Script</span>
                     </div>
                     <div class="output-wrap" style="flex:1">
-                        <div class="output-dots">
-                            <span class="dot-red"></span>
-                            <span class="dot-amber"></span>
-                            <span class="dot-green"></span>
-                        </div>
+                        <div class="output-dots"><span class="dot-red"></span><span class="dot-amber"></span><span class="dot-green"></span></div>
                         <pre id="output-script" class="output-area"></pre>
                     </div>
                     <div class="btn-row" style="justify-content:flex-end">
@@ -709,14 +1246,12 @@
                 <div class="title-lp">LINE PROFILE CREATE</div>
                 <div class="app-subtitle">Prepared by Ahsanul Kabir</div>
             </div>
-
             <div class="card-grid">
                 <div class="card indigo-stripe">
                     <div class="card-head">
                         <div class="ch-icon chi-i"><i class="fas fa-cogs" style="font-size:14px"></i></div>
                         <span class="card-head-text">Profile Parameters</span>
                     </div>
-
                     <div class="input-row" style="grid-template-columns:1fr">
                         <div class="field">
                             <label for="oltName">OLT Name</label>
@@ -727,49 +1262,29 @@
                             </select>
                         </div>
                     </div>
-
                     <div class="input-row col-2">
-                        <div class="field">
-                            <label for="profileId">Line Profile ID</label>
-                            <input type="text" id="profileId" placeholder="e.g., 10">
-                        </div>
-                        <div class="field">
-                            <label for="gemMap">Gem Map</label>
-                            <input type="number" id="gemMap" min="1" max="8" value="1">
-                        </div>
+                        <div class="field"><label for="profileId">Line Profile ID</label><input type="text" id="profileId" placeholder="e.g., 10"></div>
+                        <div class="field"><label for="gemMap">Gem Map</label><input type="number" id="gemMap" min="1" max="8" value="1"></div>
                     </div>
-
-                    <div class="section-chip">
-                        <i class="material-icons" style="font-size:0.95em">tag</i> VLAN IDs (up to 4)
-                    </div>
+                    <div class="section-chip"><i class="material-icons" style="font-size:0.95em">tag</i> VLAN IDs (up to 4)</div>
                     <div class="input-row col-2">
                         <div class="field"><input type="text" id="lp-vlan1" placeholder="VLAN 1"></div>
                         <div class="field"><input type="text" id="lp-vlan2" placeholder="VLAN 2"></div>
                         <div class="field"><input type="text" id="lp-vlan3" placeholder="VLAN 3"></div>
                         <div class="field"><input type="text" id="lp-vlan4" placeholder="VLAN 4"></div>
                     </div>
-
                     <div class="btn-row" style="margin-top:16px">
-                        <button class="btn btn-gen" onclick="generateLineProfile()">
-                            <i class="fas fa-cogs" style="font-size:14px"></i> Generate
-                        </button>
-                        <button class="btn btn-clr" onclick="clearLPFields()">
-                            <i class="fas fa-broom" style="font-size:14px"></i> Clear
-                        </button>
+                        <button class="btn btn-gen" onclick="generateLineProfile()"><i class="fas fa-cogs" style="font-size:14px"></i> Generate</button>
+                        <button class="btn btn-clr" onclick="clearLPFields()"><i class="fas fa-broom" style="font-size:14px"></i> Clear</button>
                     </div>
                 </div>
-
                 <div class="card sky-stripe">
                     <div class="card-head">
                         <div class="ch-icon chi-g"><i class="material-icons" style="font-size:16px">terminal</i></div>
                         <span class="card-head-text">Generated Script</span>
                     </div>
                     <div class="output-wrap" style="flex:1">
-                        <div class="output-dots">
-                            <span class="dot-red"></span>
-                            <span class="dot-amber"></span>
-                            <span class="dot-green"></span>
-                        </div>
+                        <div class="output-dots"><span class="dot-red"></span><span class="dot-amber"></span><span class="dot-green"></span></div>
                         <textarea id="lp-output" class="output-area" readonly placeholder="Your generated script will appear here..."></textarea>
                     </div>
                     <div class="btn-row" style="justify-content:flex-end">
@@ -781,39 +1296,491 @@
                 </div>
             </div>
         </div>
+
+        <!-- APP 3: OLT DOCS -->
+        <div id="app-docs" class="app-wrapper">
+            <div class="docs-content-scroll" id="docs-content-scroll">
+
+                <!-- OLT IPs -->
+                <div id="d_olt_ips" class="docs-tab-content active">
+                    <div class="docs-card">
+                        <div class="docs-card-header"><h2 class="docs-card-title">OLT IP Info</h2></div>
+                        <div style="margin-bottom:20px;">
+                            <label style="display:block;margin-bottom:8px;font-weight:700;color:#475569;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.5px;font-family:'Exo 2',sans-serif;">Filter by BTS Location</label>
+                            <select class="docs-olt-select" id="docs-olt-bts-select" onchange="filterDocsOltIps()">
+                                <option value="all">All BTS Locations</option>
+                                <option value="Malek Mansion BTS">Malek Mansion BTS</option>
+                                <option value="Dilkusha BTS">Dilkusha BTS</option>
+                                <option value="Jatrabari BTS">Jatrabari BTS</option>
+                                <option value="Wari BTS">Wari BTS</option>
+                                <option value="Segunbagicha BTS">Segunbagicha BTS</option>
+                                <option value="Eskaton BTS">Eskaton BTS</option>
+                                <option value="Imamganj BTS">Imamganj BTS</option>
+                                <option value="Shahjahanpur BTS">Shahjahanpur BTS</option>
+                            </select>
+                        </div>
+                        <table class="docs-olt-table">
+                            <thead><tr><th>OLT Name</th><th>OLT IP</th><th>Uplink Port</th></tr></thead>
+                            <tbody id="docs-olt-ip-tbody">
+                                <tr data-bts="Malek Mansion BTS"><td>Malek_CDATA_1</td><td>10.49.10.162</td><td>100.64.167.14 [Eth1/31]</td></tr>
+                                <tr data-bts="Malek Mansion BTS"><td>Malek_VSOL_2</td><td>10.49.10.166</td><td>100.64.167.14 [Eth1/7]</td></tr>
+                                <tr data-bts="Malek Mansion BTS"><td>Malek_ATOP_3</td><td>10.49.15.138</td><td>100.64.167.14 [Eth1/13]</td></tr>
+                                <tr data-bts="Malek Mansion BTS"><td>Malek_VSOL_4</td><td>10.49.15.126</td><td>100.64.167.14 [Eth1/8]</td></tr>
+                                <tr data-bts="Dilkusha BTS"><td>Dilkusha_CDATA_1</td><td>10.49.8.26</td><td>10.48.2.82 [Gi0/6]</td></tr>
+                                <tr data-bts="Jatrabari BTS"><td>Jatrabari_ATOP_1</td><td>10.49.9.62</td><td>100.64.168.58 [GE0/0/15]</td></tr>
+                                <tr data-bts="Wari BTS"><td>Wari_CDATA_1</td><td>10.49.8.84</td><td>100.64.168.66 [GE0/0/2]</td></tr>
+                                <tr data-bts="Wari BTS"><td>Wari_ATOP_2</td><td>10.49.8.85</td><td>100.64.168.66 [XGE0/0/2]</td></tr>
+                                <tr data-bts="Segunbagicha BTS"><td>Segun_CDATA_1</td><td>10.49.10.130</td><td>10.66.9.250 [Eth1/29]</td></tr>
+                                <tr data-bts="Segunbagicha BTS"><td>Segun_CDATA_2</td><td>10.49.10.131</td><td>10.66.9.250 [Eth1/43]</td></tr>
+                                <tr data-bts="Segunbagicha BTS"><td>Segun_CDATA_3</td><td>10.49.10.132</td><td>10.66.9.250 [Eth1/33]</td></tr>
+                                <tr data-bts="Segunbagicha BTS"><td>Segun_CDATA_18</td><td>10.49.10.150</td><td>10.66.9.250 [Eth1/27]</td></tr>
+                                <tr data-bts="Segunbagicha BTS"><td>Segun_CDATA_19</td><td>10.49.10.151</td><td>10.66.9.250 [Eth1/28]</td></tr>
+                                <tr data-bts="Segunbagicha BTS"><td>Segun_CDATA_20</td><td>10.49.10.152</td><td>10.66.9.250 [Eth1/32]</td></tr>
+                                <tr data-bts="Eskaton BTS"><td>Eskaton_CDATA_1</td><td>10.49.10.172</td><td>10.66.1.250 [Eth1/18]</td></tr>
+                                <tr data-bts="Eskaton BTS"><td>Eskaton_CDATA_2</td><td>10.49.10.171</td><td>10.66.1.250 [Eth1/21]</td></tr>
+                                <tr data-bts="Eskaton BTS"><td>Eskaton_CDATA_3</td><td>10.49.10.173</td><td>10.66.1.250 [Eth1/19]</td></tr>
+                                <tr data-bts="Imamganj BTS"><td>Imamgonj_VSOL_1</td><td>10.49.8.94</td><td>10.66.61.2 [Gi0/42]</td></tr>
+                                <tr data-bts="Imamganj BTS"><td>Imamgonj_UTS_3</td><td>10.49.8.91</td><td>10.66.61.2 [Gi0/52]</td></tr>
+                                <tr data-bts="Shahjahanpur BTS"><td>Shahjhnpr_CDATA_1</td><td>10.49.11.254</td><td>-</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- CDATA GPON Troubleshoot -->
+                <div id="d_cdata_troubleshoot" class="docs-tab-content">
+                    <div class="docs-card">
+                        <div class="docs-card-header"><h2 class="docs-card-title">CDATA GPON Troubleshooting</h2></div>
+                        <div class="docs-search-wrapper"><span class="docs-search-icon">🔍</span><input type="text" class="docs-search-input" id="s_cdata_ts" placeholder="Search commands..."></div>
+                        <span class="docs-cmd-label">ONU Discover check:</span><code class="docs-code">(config-interface-gpon-0/0)# show ont autofind all
+(config-interface-gpon-0/0)# show ont autofind 1 all</code>
+                        <span class="docs-cmd-label">ONU configuration Check:</span><code class="docs-code">(config-interface-gpon-0/0)# show ont info 1 1
+(config)# show current-config section ont 0/0 2 5</code>
+                        <span class="docs-cmd-label">ONU Laser check:</span><code class="docs-code">(config-interface-gpon-0/0)# show ont optical-info 1 1</code>
+                        <span class="docs-cmd-label">ONU Delete:</span><code class="docs-code">(config-interface-gpon-0/0)# ont delete 1 28</code>
+                        <span class="docs-cmd-label">MAC from ONU port:</span><code class="docs-code">(config-interface-gpon-0/0)# show ont port learned-mac 1 1 eth 4</code>
+                        <span class="docs-cmd-label">ONU Reboot:</span><code class="docs-code">(config-interface-gpon-0/0)# ont reboot 1 3</code>
+                        <span class="docs-cmd-label">Line Profile check:</span><code class="docs-code">(config)# show ont-lineprofile gpon profile-id 5</code>
+                        <span class="docs-cmd-label">Show all ONU at OLT:</span><code class="docs-code">(config-interface-gpon-0/0)# show ont info all</code>
+                        <span class="docs-cmd-label">Rate-Limit UP/Down:</span><code class="docs-code">(config-interface-gpon-0/0)#ont port car 2 14 eth 3 inbound 60 outbound 60
+(config-interface-gpon-0/0)#no ont port car 1 2 eth 1 inbound outbound</code>
+                        <span class="docs-cmd-label">ONU Port VLAN/ Status Check:</span><code class="docs-code">(config-interface-gpon-0/0)# show ont port attribute 15 13 eth all
+(config-interface-gpon-0/0)# show ont port state 15 13 eth all
+(config-interface-gpon-0/0)# show ont wan config 15 9</code>
+                        <span class="docs-cmd-label">ONU Port BW check:</span><code class="docs-code">(config-interface-gpon-0/0)# show ont port car 1 1 eth all</code>
+                        <span class="docs-cmd-label">ONU Lan port shut /no shut:</span><code class="docs-code">(config-interface-gpon-0/0)# ont port attribute 1 1 eth 1 operational-state on
+(config-interface-gpon-0/0)# ont port attribute 1 1 eth 1 operational-state off</code>
+                        <span class="docs-cmd-label">Check ONU service port:</span><code class="docs-code">(config)# show service-port gpon 0/0 port 1 ont 1</code>
+                        <span class="docs-cmd-label">Mac Static:</span><code class="docs-code">(config)# mac-address static port xge 0/0/1 vlan 295 B8:D6:F6:11:46:36</code>
+                        <span class="docs-cmd-label">Pon TX power/Temp Check:</span><code class="docs-code">(config-interface-gpon-0/0)# show port ddm-info 2
+(config-interface-gpon-0/0)#show temperature</code>
+                        <span class="docs-cmd-label">PON Shut/No-Shut:</span><code class="docs-code">(config-interface-gpon-0/0)# shutdown 3
+(config-interface-gpon-0/0)# no shutdown 3</code>
+                    </div>
+                </div>
+
+                <!-- CDATA GPON Installation -->
+                <div id="d_cdata_installation" class="docs-tab-content">
+                    <div class="docs-card">
+                        <div class="docs-card-header"><h2 class="docs-card-title">CDATA GPON Installation</h2></div>
+                        <div class="docs-search-wrapper"><span class="docs-search-icon">🔍</span><input type="text" class="docs-search-input" id="s_cdata_in" placeholder="Search installation commands..."></div>
+                        <span class="docs-cmd-label">VLAN Check:</span><code class="docs-code">(config)# show vlan all
+(config)# show vlan 100</code>
+                        <span class="docs-cmd-label">VLAN Create:</span><code class="docs-code">(config)# vlan 191</code>
+                        <span class="docs-cmd-label">VLAN Tagg on Uplink port [1G]:</span><code class="docs-code">Malek_GPON-01(config)# interface ge 0/0
+Malek_GPON-01(config-interface-ge-0/0)# vlan trunk 1 123</code>
+                        <span class="docs-cmd-label">VLAN Tagg on Uplink port [10G]:</span><code class="docs-code">Malek_GPON-01(config)# interface xge 0/0
+Malek_GPON-01(config-interface-xge-0/0)# vlan trunk 1 123</code>
+                        <span class="docs-cmd-label">Line Profile Create:</span><code class="docs-code">(config)# ont-lineprofile gpon profile-id 489
+(config-ont-lineprofile-489)# tcont 1 dba-profile-id 30
+(config-ont-lineprofile-489)# gem add 1 tcont 1
+(config-ont-lineprofile-489)# gem mapping 1 1 vlan 489
+(config-ont-lineprofile-489)# mapping-mode vlan
+(config-ont-lineprofile-489)# commit
+(config-ont-lineprofile-489)# exit</code>
+                        <span class="docs-cmd-label">Enter a VLAN under a specific Line-profile:</span><code class="docs-code">ont-lineprofile gpon profile-id 76
+tcont 1 dba-profile-id 30
+gem add 1 tcont 1
+gem mapping 1 2 vlan 76
+mapping-mode vlan
+commit
+exit</code>
+                        <span class="docs-cmd-label">Enter VLAN ONU 2nd port:</span><code class="docs-code">(config)# interface gpon 0/0
+(config-interface-gpon-0/0)# ont port attribute 9 9 eth 2 operational-state on
+(config-interface-gpon-0/0)# ont port native-vlan 9 9 eth 2 vlan 1260 priority 0
+(config-interface-gpon-0/0)# exit
+(config)# save
+(config)#service-port autoindex vlan 1260 gpon 0/0 port 9 ont 9 gemport 1 multi-service user-vlan 1260 tag-action transparent</code>
+                    </div>
+                </div>
+
+                <!-- VSOL Troubleshoot -->
+                <div id="d_vsol_troubleshoot" class="docs-tab-content">
+                    <div class="docs-card">
+                        <div class="docs-card-header"><h2 class="docs-card-title">VSOL &amp; ATOP Troubleshooting</h2></div>
+                        <div class="docs-search-wrapper"><span class="docs-search-icon">🔍</span><input type="text" class="docs-search-input" id="s_vsol_ts" placeholder="Search commands..."></div>
+                        <span class="docs-cmd-label">ONU Discover Check:</span><code class="docs-code">(config-pon-0/1)# show onu auto-find</code>
+                        <span class="docs-cmd-label">ONU Config Check:</span><code class="docs-code">(config-pon-0/1)# show running-config onu 10</code>
+                        <span class="docs-cmd-label">Free ONU ID check:</span><code class="docs-code">(config-pon-0/1)# show onu state</code>
+                        <span class="docs-cmd-label">ONU Reboot:</span><code class="docs-code">(config-pon-0/2)# onu 26 reboot</code>
+                        <span class="docs-cmd-label">ONU Port learnt mac:</span><code class="docs-code">(config)# show mac address-table pon 1 2</code>
+                        <span class="docs-cmd-label">ONU Laser check:</span><code class="docs-code">(config-pon-0/1)# show onu 2 optical_info</code>
+                        <span class="docs-cmd-label">Profile Line check:</span><code class="docs-code">(config)# show profile line id 5</code>
+                        <span class="docs-cmd-label">ONU Eth port status check:</span><code class="docs-code">(config-pon-0/3)# show onu 24 eth 1</code>
+                        <span class="docs-cmd-label">All ONU Laser check:</span><code class="docs-code">(config-pon-0/3)# show pon onu all rx-power</code>
+                        <span class="docs-cmd-label">Rate-limit Omit:</span><code class="docs-code">(config-pon-0/3)#no ont port car 15 19 eth 1 inbound
+(config-pon-0/3)#no ont port car 15 19 eth 1 outbound</code>
+                        <span class="docs-cmd-label">To Save:</span><code class="docs-code">(config)# write</code>
+                        <span class="docs-cmd-label">ONU Disable / Enable:</span><code class="docs-code">(config-pon-0/2)# onu 26 enable
+(config-pon-0/2)# onu 26 disable</code>
+                        <span class="docs-cmd-label">ONU Lock/ Unlock:</span><code class="docs-code">(config-pon-0/2)# onu 26 deactivate
+(config-pon-0/2)# onu 26 activate</code>
+                        <span class="docs-cmd-label">ONU Lock / Unlock (ONU Port):</span><code class="docs-code">(config-pon-0/2)# onu 26 eth 1 state disable
+(config-pon-0/2)# onu 26 eth 1 state enable</code>
+                        <span class="docs-cmd-label">Mac Static:</span><code class="docs-code">(config)# mac address-table static vlan 71 80db:1702:496d interface gigabitethernet 0/5
+(config)#mac address-table static vlan 59 0002-17dc-d81b interface gigabitethernet 0/6</code>
+                        <span class="docs-cmd-label">Pon Shut / No Shut:</span><code class="docs-code">(config-pon-0/1)# shutdown
+(config-pon-0/1)# no shutdown</code>
+                        <span class="docs-cmd-label">PON TX Power check/Temperature:</span><code class="docs-code">(config-pon-0/1)# show pon optical transceiver</code>
+                        <span class="docs-cmd-label">PON / Uplink port traffic check:</span><code class="docs-code">(config-if-ge0/5)# show interface</code>
+                        <span class="docs-cmd-label">ONU Distance check from OLT:</span><code class="docs-code">(config-pon-0/3)# show onu 25 distance</code>
+                    </div>
+                </div>
+
+                <!-- VSOL Installation -->
+                <div id="d_vsol_installation" class="docs-tab-content">
+                    <div class="docs-card">
+                        <div class="docs-card-header"><h2 class="docs-card-title">VSOL &amp; ATOP Installation</h2></div>
+                        <div class="docs-search-wrapper"><span class="docs-search-icon">🔍</span><input type="text" class="docs-search-input" id="s_vsol_in" placeholder="Search installation commands..."></div>
+                        <span class="docs-cmd-label">Show Vlan:</span><code class="docs-code">(config)# show vlan 500</code>
+                        <span class="docs-cmd-label">Vlan Create:</span><code class="docs-code">(config)# vlan 500</code>
+                        <span class="docs-cmd-label">All interface check:</span><code class="docs-code">(config)# show interface brief</code>
+                        <span class="docs-cmd-label">Vlan Add in Uplink port:</span><code class="docs-code">(config)# interface gigabitethernet 0/5
+(config-if-ge0/5)# switchport mode trunk
+(config-if-ge0/5)# switchport trunk vlan 500
+(config-if-ge0/5)# exit</code>
+                        <span class="docs-cmd-label">DBA Profile Check:</span><code class="docs-code">(config)# show profile dba</code>
+                        <span class="docs-cmd-label">DBA Profile Create:</span><code class="docs-code">profile dba id 1 name MAX_BW
+type 4 maximum 307200 Kbps
+commit</code>
+                        <span class="docs-cmd-label">Line-Profile Create:</span><code class="docs-code">(config)# profile line id 782
+(profile-line:782)#tcont 1 dba MAX_BW
+(profile-line:782)#gemport 1 tcont 1
+(profile-line:782)#service 1 gemport 1 vlan 782
+(profile-line:782)#service-port 1 gemport 1 uservlan 782 vlan 782
+(profile-line:782)#commit
+(profile-line:782)# exit</code>
+                        <span class="docs-cmd-label">Line-Profile Create with multiple Vlan:</span><code class="docs-code">(config)# profile line id 14
+(profile-line:14)# tcont 1 dba MAX_BW
+(profile-line:14)# gemport 1 tcont 1
+(profile-line:14)# service 1 gemport 1 vlan 14,620
+(profile-line:14)# service-port 1 gemport 1 uservlan 14 vlan 14
+(profile-line:14)# service-port 2 gemport 1 uservlan 620 vlan 620
+(profile-line:14)# commit
+(profile-line:14)# exit</code>
+                    </div>
+                </div>
+
+                <!-- GPON 8 Port Troubleshoot -->
+                <div id="d_gpon8_troubleshoot" class="docs-tab-content">
+                    <div class="docs-card">
+                        <div class="docs-card-header"><h2 class="docs-card-title">GPON 8 Port Troubleshooting</h2></div>
+                        <div class="docs-search-wrapper"><span class="docs-search-icon">🔍</span><input type="text" class="docs-search-input" id="s_gpon8_ts" placeholder="Search commands..."></div>
+                        <span class="docs-cmd-label">ONU Discover:</span><code class="docs-code">(config-interface-gpon)# show ont autofind all</code>
+                        <span class="docs-cmd-label">ALL ONU Details:</span><code class="docs-code">(config)# show saved-config</code>
+                        <span class="docs-cmd-label">Specific ONU Details:</span><code class="docs-code">(config-interface-gpon)# show ont info 2 2</code>
+                        <span class="docs-cmd-label">ONU port check:</span><code class="docs-code">(config-interface-gpon)# show ont port attribute 2 2 eth all</code>
+                        <span class="docs-cmd-label">ONU Port Details:</span><code class="docs-code">(config-interface-gpon)# show ont port car 2 2 eth all</code>
+                        <span class="docs-cmd-label">MAC from ONU port:</span><code class="docs-code">(config)# show mac-address vlan 999
+(config-interface-gpon)# show ont port learned-mac 2 9 eth 2</code>
+                        <span class="docs-cmd-label">ONU Port BW:</span><code class="docs-code">(config-interface-gpon)# ont port car 2 2 eth 1 inbound 100 outbound 100
+(config-interface-gpon)# ont port car 2 2 eth 2 inbound 100 outbound 100</code>
+                        <span class="docs-cmd-label">ONU Delete:</span><code class="docs-code">(config-interface-gpon)# ont delete 2 2</code>
+                        <span class="docs-cmd-label">Show all onu of specific pon port:</span><code class="docs-code">Dilkusha_GPON-01(config)# show ont info 2 all</code>
+                        <span class="docs-cmd-label">Show Line Profile:</span><code class="docs-code">(config)# show ont-lineprofile profile-id 512</code>
+                        <span class="docs-cmd-label">PON Shut / No-Shut:</span><code class="docs-code">(config-interface-gpon)# shutdown 2
+(config-interface-gpon)# no shutdown 2</code>
+                    </div>
+                </div>
+
+                <!-- GPON 8 Port Installation -->
+                <div id="d_gpon8_installation" class="docs-tab-content">
+                    <div class="docs-card">
+                        <div class="docs-card-header"><h2 class="docs-card-title">GPON 8 Port Installation</h2></div>
+                        <div class="docs-search-wrapper"><span class="docs-search-icon">🔍</span><input type="text" class="docs-search-input" id="s_gpon8_in" placeholder="Search installation commands..."></div>
+                        <span class="docs-cmd-label">VLAN Add:</span><code class="docs-code">(config)#vlan 748</code>
+                        <span class="docs-cmd-label">VLAN Tagg on Uplink port [GE]:</span><code class="docs-code">Dilkusha_GPON-01(config)# interface ge
+Dilkusha_GPON-01(config-interface-ge)# vlan trunk 1 748</code>
+                        <span class="docs-cmd-label">VLAN Tagg on Uplink port [XGE]:</span><code class="docs-code">Dilkusha_GPON-01(config)# interface xge
+Dilkusha_GPON-01(config-interface-xge)# vlan trunk 1 748</code>
+                        <span class="docs-cmd-label">VLAN on PON ports:</span><code class="docs-code">(config-interface-gpon)# vlan mode 1-8 trunk
+(config-interface-gpon)# vlan trunk 1-8 748</code>
+                        <span class="docs-cmd-label">Line Profile create:</span><code class="docs-code">ont-lineprofile  profile-id 191
+tcont 1 dba-profile-id 30
+gem add 1 tcont 1
+gem mapping 1 1 vlan 191
+mapping-mode vlan
+commit
+exit</code>
+                    </div>
+                </div>
+
+                <!-- UTSTAR Troubleshoot -->
+                <div id="d_utstar_troubleshoot" class="docs-tab-content">
+                    <div class="docs-card">
+                        <div class="docs-card-header"><h2 class="docs-card-title">EPON UTSTAR Troubleshooting</h2></div>
+                        <div class="docs-search-wrapper"><span class="docs-search-icon">🔍</span><input type="text" class="docs-search-input" id="s_utstar_ts" placeholder="Search commands..."></div>
+                        <span class="docs-cmd-label">Find unbound ONU:</span><code class="docs-code">(config-t)# show interface epon-olt 1/4 onu-unbound</code>
+                        <span class="docs-cmd-label">ONU Status check:</span><code class="docs-code">(config-t)# show interface epon-olt 1/1 onu 63 summary
+(config-t)# show interface epon-olt 1/1 onu 63 brief</code>
+                        <span class="docs-cmd-label">ONU Configuration Check:</span><code class="docs-code">(config-t)# show configuration  interface epon-olt 1/1 onu 56</code>
+                        <span class="docs-cmd-label">ONU Lan port status check:</span><code class="docs-code">(config-t-if-olt-1/4)# show interface epon-olt 1/1 onu 63 port 1 remote-mgmt</code>
+                        <span class="docs-cmd-label">ONU port learnt mac check:</span><code class="docs-code">(config-t-if-olt-1/4)# show interface epon-olt 1/4 onu 13 mac-address-table</code>
+                        <span class="docs-cmd-label">ONU Delete:</span><code class="docs-code">(config-t-if-olt-1/4)# no onu 13</code>
+                        <span class="docs-cmd-label">ONU Laser check:</span><code class="docs-code">(config-t-if-olt-1/1)# show interface epon-olt 1/1 onu 12 opm-diagnisos</code>
+                        <span class="docs-cmd-label">ONU Rate Limit:</span><code class="docs-code">(config-if-onu-1/1/37)# dba-sla upstream maximum-bandwidth 61440 Kbps
+(config-if-onu-1/1/37)# dba-sla downstream  maximum-bandwidth 61440 Kbps</code>
+                        <span class="docs-cmd-label">Configuration Save:</span><code class="docs-code">telnet@Malek_VSOL# conf m
+telnet@Malek_VSOL# (config-mgmt)# save</code>
+                        <span class="docs-cmd-label">PON shut / unshut:</span><code class="docs-code">(config-t)# interface epon-olt 1/2
+(config-t-if-olt-1/2)#shutdown</code>
+                        <span class="docs-cmd-label">PON Up/Down Check:</span><code class="docs-code">(config-t)# show interface epon-olt 1/1 onu brief</code>
+                        <span class="docs-cmd-label">OLT Uplink port status check:</span><code class="docs-code">(config-t)# show interface giga-ethernet 3/1 switchport</code>
+                    </div>
+                </div>
+
+                <!-- UTSTAR Installation -->
+                <div id="d_utstar_installation" class="docs-tab-content">
+                    <div class="docs-card">
+                        <div class="docs-card-header"><h2 class="docs-card-title">EPON UTSTAR Installation</h2></div>
+                        <div class="docs-search-wrapper"><span class="docs-search-icon">🔍</span><input type="text" class="docs-search-input" id="s_utstar_in" placeholder="Search installation commands..."></div>
+                        <span class="docs-cmd-label">Show Vlan:</span><code class="docs-code">(config-t)# show vlan 291</code>
+                        <span class="docs-cmd-label">Vlan Create:</span><code class="docs-code">(config-t)# vlan 291
+(config-t-vlan-291)# name Popular
+(config-t-vlan-291)# member ge1/1-4,ge2/1-4,ge3/1-4 tagged
+(config-t-vlan-291)# exit</code>
+                    </div>
+                </div>
+
+                <!-- PHYHOME Troubleshoot -->
+                <div id="d_phyhome_troubleshoot" class="docs-tab-content">
+                    <div class="docs-card">
+                        <div class="docs-card-header"><h2 class="docs-card-title">EPON PHYHOME Troubleshooting</h2></div>
+                        <div class="docs-search-wrapper"><span class="docs-search-icon">🔍</span><input type="text" class="docs-search-input" id="s_phyhome_ts" placeholder="Search commands..."></div>
+                        <span class="docs-cmd-label">Show All ONU in OLT:</span><code class="docs-code">>ont
+ont# display ont-auth-info slotno 1</code>
+                        <span class="docs-cmd-label">ONU Configuration Check:</span><code class="docs-code">service# display service info 2 2 9</code>
+                        <span class="docs-cmd-label">Delete ONU:</span><code class="docs-code">ont\configure# ont-auth undo 1 1 6</code>
+                        <span class="docs-cmd-label">ONU Laser check:</span><code class="docs-code">ont# display ont-optical-info 1 1 5</code>
+                        <span class="docs-cmd-label">ONU LAN Port Check:</span><code class="docs-code">service# display onu-port-attribute 1 1 5</code>
+                        <span class="docs-cmd-label">ONU RESET:</span><code class="docs-code">system\configure# reset 2 3 30</code>
+                        <span class="docs-cmd-label">OLT Mac Address Table:</span><code class="docs-code">fdb# display mac-table</code>
+                        <span class="docs-cmd-label">For Lock/delete ONU Service:</span><code class="docs-code">service\configure# delete 2 4 43 1 service 1</code>
+                        <span class="docs-cmd-label">PON Shut/No shut:</span><code class="docs-code">system\configure# pon off 1 1
+system\configure# pon on 1 1</code>
+                        <span class="docs-cmd-label">PON Status Check:</span><code class="docs-code">system# display pon-state 2 2</code>
+                    </div>
+                </div>
+
+                <!-- PHYHOME Installation -->
+                <div id="d_phyhome_installation" class="docs-tab-content">
+                    <div class="docs-card">
+                        <div class="docs-card-header"><h2 class="docs-card-title">EPON PHYHOME Installation</h2></div>
+                        <div class="docs-search-wrapper"><span class="docs-search-icon">🔍</span><input type="text" class="docs-search-input" id="s_phyhome_in" placeholder="Search installation commands..."></div>
+                        <span class="docs-cmd-label">Vlan Check:</span><code class="docs-code">vlan# display vlan-database</code>
+                        <span class="docs-cmd-label">Vlan Create:</span><code class="docs-code">vlan#vlan-database data Internet 428 6:1 tagged</code>
+                    </div>
+                </div>
+
+                <!-- FHNET Troubleshoot -->
+                <div id="d_fhnet_troubleshoot" class="docs-tab-content">
+                    <div class="docs-card">
+                        <div class="docs-card-header"><h2 class="docs-card-title">EPON FHNET Troubleshooting</h2></div>
+                        <div class="docs-search-wrapper"><span class="docs-search-icon">🔍</span><input type="text" class="docs-search-input" id="s_fhnet_ts" placeholder="Search commands..."></div>
+                        <span class="docs-cmd-label">ONU Discover (Auto Bind) &amp; ONU status Check:</span><code class="docs-code">(config)#show onu-status</code>
+                        <span class="docs-cmd-label">ALL interface status:</span><code class="docs-code">(config)# show interface brief</code>
+                        <span class="docs-cmd-label">ONU Configuration check:</span><code class="docs-code">(onu-0/1/2)#show running-config onumnt 0/1/2</code>
+                        <span class="docs-cmd-label">ONU Eth port status check:</span><code class="docs-code">(onu-0/1/2)#show onu-interface ethernet 0/1</code>
+                        <span class="docs-cmd-label">ONU laser check:</span><code class="docs-code">(onu-0/1/3)#show onu-opm-diagnosis</code>
+                        <span class="docs-cmd-label">ONU Reboot:</span><code class="docs-code">(config)#onu 0/8/4
+(onu-0/8/4)#onu-reboot</code>
+                        <span class="docs-cmd-label">PON shut / no shut:</span><code class="docs-code">(config)#interface pon 0/8
+(config-if-pon-0/8)#shutdown
+(config-if-pon-0/8)#no shutdown</code>
+                        <span class="docs-cmd-label">PON Laser Check:</span><code class="docs-code">(config-if-pon-0/1)#show opm option diagnosis</code>
+                        <span class="docs-cmd-label">SFP Laser Check:</span><code class="docs-code">(config)#show interface sfp ethernet 0/5</code>
+                    </div>
+                </div>
+
+                <!-- FHNET Installation -->
+                <div id="d_fhnet_installation" class="docs-tab-content">
+                    <div class="docs-card">
+                        <div class="docs-card-header"><h2 class="docs-card-title">EPON FHNET Installation</h2></div>
+                        <div class="docs-search-wrapper"><span class="docs-search-icon">🔍</span><input type="text" class="docs-search-input" id="s_fhnet_in" placeholder="Search installation commands..."></div>
+                        <span class="docs-cmd-label">Vlan Create:</span><code class="docs-code">(config)# vlan 2000
+(config-if-vlan)#switchport all</code>
+                        <span class="docs-cmd-label">VLAN Check:</span><code class="docs-code">(config)# show vlan
+(config)#show vlan 10</code>
+                        <span class="docs-cmd-label">Config Save:</span><code class="docs-code">Malek_FH_Net_07# copy running-config startup-config</code>
+                    </div>
+                </div>
+
+            </div><!-- end docs-content-scroll -->
+        </div><!-- end app-docs -->
+
+        <!-- APP: BTS INFO -->
+        <div id="app-bts" class="app-wrapper">
+            <div class="app-header">
+                <div style="font-family:'Orbitron',monospace;font-size:1.7em;font-weight:900;letter-spacing:4px;background:linear-gradient(90deg,#f59e0b 0%,#ef4444 50%,#ec4899 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 2px 10px rgba(251,191,36,0.25));">BTS INFO</div>
+                <div class="app-subtitle">Router &amp; Switch IP Directory</div>
+            </div>
+            <!-- Search Card -->
+            <div class="card" style="margin-bottom:18px;border-top:3px solid #f59e0b;">
+                <div class="card-head">
+                    <div class="ch-icon" style="background:rgba(251,191,36,0.15);color:#fbbf24;width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;">
+                        <i class="material-icons" style="font-size:16px">search</i>
+                    </div>
+                    <span class="card-head-text">Search by BTS Name</span>
+                </div>
+                <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                    <div style="flex:1;min-width:200px;position:relative;">
+                        <select id="bts-select-dropdown" onchange="selectBtsFromDropdown(this.value)" style="width:100%;padding:11px 16px;border-radius:10px;border:1.5px solid #fde68a;background:#fffbeb;color:#1e1b4b;font-family:'Exo 2',sans-serif;font-size:0.95em;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;">
+                            <option value="">— Select a BTS Site —</option>
+                        </select>
+                        <span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:#f59e0b;font-size:1em;">▼</span>
+                    </div>
+                    <button onclick="clearBtsSearch()" style="padding:10px 18px;border-radius:10px;border:none;background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;font-family:'Orbitron',monospace;font-size:0.72em;font-weight:700;letter-spacing:1px;cursor:pointer;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">CLEAR</button>
+                </div>
+                <div id="bts-search-result-count" style="margin-top:8px;font-size:0.8em;color:#a78bfa;font-family:'Rajdhani',sans-serif;letter-spacing:0.5px;"></div>
+            </div>
+            <!-- Table Card -->
+            <div class="card" style="border-top:3px solid #ef4444;padding:0;overflow:hidden;">
+                <div style="overflow-x:auto;">
+                    <table id="bts-info-table" style="width:100%;border-collapse:collapse;font-family:'Exo 2',sans-serif;">
+                        <thead>
+                            <tr style="background:linear-gradient(90deg,#1e1b4b 0%,#312e81 100%);">
+                                <th style="padding:14px 18px;text-align:left;font-family:'Orbitron',monospace;font-size:0.68em;letter-spacing:2px;color:#a78bfa;font-weight:700;border-bottom:2px solid rgba(167,139,250,0.3);white-space:nowrap;"># </th>
+                                <th style="padding:14px 18px;text-align:left;font-family:'Orbitron',monospace;font-size:0.68em;letter-spacing:2px;color:#a78bfa;font-weight:700;border-bottom:2px solid rgba(167,139,250,0.3);white-space:nowrap;">BTS NAME</th>
+                                <th style="padding:14px 18px;text-align:left;font-family:'Orbitron',monospace;font-size:0.68em;letter-spacing:2px;color:#38bdf8;font-weight:700;border-bottom:2px solid rgba(167,139,250,0.3);white-space:nowrap;">DEVICE TYPE</th>
+                                <th style="padding:14px 18px;text-align:left;font-family:'Orbitron',monospace;font-size:0.68em;letter-spacing:2px;color:#fbbf24;font-weight:700;border-bottom:2px solid rgba(167,139,250,0.3);white-space:nowrap;">IP ADDRESS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bts-table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div><!-- end app-bts -->
+
     </main>
 
     <div class="toast" id="toast"></div>
 
     <script>
+        // ════ TAB SWITCHING ════
         function switchTab(id, btn) {
+            // Remove docs mode
+            document.body.classList.remove('docs-mode');
+            document.getElementById('docs-subnav').classList.remove('open');
+            const mc = document.getElementById('main-content');
+            mc.style.overflow = '';
+            mc.style.padding = '';
+            mc.style.display = '';
+            mc.style.flexDirection = '';
+
             document.querySelectorAll('.app-wrapper').forEach(a => a.classList.remove('active'));
             document.getElementById(id).classList.add('active');
+
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
         }
 
-        function showToast(msg, type = 'success') {
-            const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.style.background = type === 'error'
-                ? 'linear-gradient(135deg,#dc2626,#ef4444)'
-                : 'linear-gradient(135deg,#059669,#10b981)';
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 2400);
+        function switchToDocsTab(btn) {
+            document.querySelectorAll('.app-wrapper').forEach(a => a.classList.remove('active'));
+            document.getElementById('app-docs').classList.add('active');
+
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Apply docs mode styling
+            document.body.classList.add('docs-mode');
+            const mc = document.getElementById('main-content');
+            mc.style.overflow = 'hidden';
+            mc.style.padding = '0';
+            mc.style.display = 'flex';
+            mc.style.flexDirection = 'column';
+
+            // Show sub-nav
+            document.getElementById('docs-subnav').classList.add('open');
+
+            // Init search
+            setupAllSearches();
         }
 
+        function toggleSubGroup(header) {
+            const items = header.nextElementSibling;
+            const isOpen = items.classList.contains('open');
+            // Close all siblings within same parent docs-subnav-items
+            const parent = header.closest('.docs-subnav-items');
+            if (parent) {
+                parent.querySelectorAll('.docs-sub-group-header').forEach(h => h.classList.remove('open'));
+                parent.querySelectorAll('.docs-sub-group-items').forEach(i => i.classList.remove('open'));
+            }
+            if (!isOpen) {
+                items.classList.add('open');
+                header.classList.add('open');
+            }
+        }
+
+        // ════ DOCS SUB-NAV ════
+        function toggleDocsSub(header) {
+            const items = header.nextElementSibling;
+            const isOpen = items.classList.contains('open');
+            // Close all
+            document.querySelectorAll('.docs-subnav-items').forEach(i => i.classList.remove('open'));
+            document.querySelectorAll('.docs-subnav-header .sub-arrow').forEach(a => {
+                a.parentElement.classList.remove('open');
+            });
+            if (!isOpen) {
+                items.classList.add('open');
+                header.classList.add('open');
+            }
+        }
+
+        let activeDocsSubBtn = null;
+        function showDocsContent(id, btn) {
+            document.querySelectorAll('.docs-tab-content').forEach(c => c.classList.remove('active'));
+            const target = document.getElementById(id);
+            if (target) {
+                target.classList.add('active');
+                const scroll = document.getElementById('docs-content-scroll');
+                if (scroll) scroll.scrollTop = 0;
+            }
+            // Clear old active sub btn
+            document.querySelectorAll('.docs-sub-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+        }
+
+        function filterDocsOltIps() {
+            const sel = document.getElementById('docs-olt-bts-select').value;
+            const rows = document.getElementById('docs-olt-ip-tbody').getElementsByTagName('tr');
+            for (let r of rows) {
+                r.style.display = (sel === 'all' || r.getAttribute('data-bts') === sel) ? '' : 'none';
+            }
+        }
+
+        // ════ ONU SCRIPT ════
         function generateOnuScript() {
-            const oltType    = document.getElementById('olt-type').value;
-            const slot       = document.getElementById('slot').value;
-            const pon        = document.getElementById('pon').value;
-            const onuId      = document.getElementById('onu-id').value;
-            const onuPorts   = parseInt(document.getElementById('onu-ports').value, 10);
-            const onuMac     = document.getElementById('onu-mac').value;
-            const lineProfile= document.getElementById('line-profile').value;
-            const bandwidth  = parseInt(document.getElementById('bandwidth').value, 10);
-            const gemId      = document.getElementById('gem-id').value || '1';
-            const vlanList   = ['vlan1','vlan2','vlan3','vlan4'].map(id => document.getElementById(id).value.trim());
+            const oltType     = document.getElementById('olt-type').value;
+            const slot        = document.getElementById('slot').value;
+            const pon         = document.getElementById('pon').value;
+            const onuId       = document.getElementById('onu-id').value;
+            const onuPorts    = parseInt(document.getElementById('onu-ports').value, 10);
+            const onuMac      = document.getElementById('onu-mac').value;
+            const lineProfile = document.getElementById('line-profile').value;
+            const bandwidth   = parseInt(document.getElementById('bandwidth').value, 10);
+            const gemId       = document.getElementById('gem-id').value || '1';
+            const vlanList    = ['vlan1','vlan2','vlan3','vlan4'].map(id => document.getElementById(id).value.trim());
 
             let script = '', srvProfileId = '';
             if (oltType.startsWith('cdata-gpon')) srvProfileId = onuPorts === 4 ? '1' : '4';
@@ -931,11 +1898,11 @@
         }
 
         function clearOnuForm() {
-            document.getElementById('olt-type').value  = 'cdata-gpon-16';
+            document.getElementById('olt-type').value = 'cdata-gpon-16';
             document.getElementById('onu-ports').value = '1';
-            document.getElementById('slot').value      = '0';
+            document.getElementById('slot').value = '0';
             document.getElementById('line-profile').value = '5';
-            document.getElementById('gem-id').value    = '1';
+            document.getElementById('gem-id').value = '1';
             document.getElementById('bandwidth').value = '100';
             ['pon','onu-id','onu-mac','vlan1','vlan2','vlan3','vlan4'].forEach(id => document.getElementById(id).value = '');
             document.getElementById('output-script').innerText = '';
@@ -952,6 +1919,7 @@
             }).catch(() => showToast('Copy failed', 'error'));
         }
 
+        // ════ LINE PROFILE ════
         function generateLineProfile() {
             const olt       = document.getElementById("oltName").value;
             const profileId = document.getElementById("profileId").value.trim() || "10";
@@ -993,7 +1961,161 @@
             }).catch(() => showToast('Copy failed', 'error'));
         }
 
+        // ════ TOAST ════
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.style.background = type === 'error'
+                ? 'linear-gradient(135deg,#dc2626,#ef4444)'
+                : 'linear-gradient(135deg,#059669,#10b981)';
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2400);
+        }
+
+        // ════ DOCS SEARCH ════
+        let searchesInit = false;
+        function setupAllSearches() {
+            if (searchesInit) return;
+            searchesInit = true;
+            const ids = [
+                's_cdata_ts','s_cdata_in','s_vsol_ts','s_vsol_in',
+                's_gpon8_ts','s_gpon8_in','s_utstar_ts','s_utstar_in',
+                's_phyhome_ts','s_phyhome_in','s_fhnet_ts','s_fhnet_in'
+            ];
+            ids.forEach(id => {
+                const inp = document.getElementById(id);
+                if (!inp) return;
+                inp.addEventListener('input', function() {
+                    const q = this.value.toLowerCase();
+                    const card = this.closest('.docs-card');
+                    const labels = card.querySelectorAll('.docs-cmd-label');
+                    labels.forEach(lbl => {
+                        const code = lbl.nextElementSibling;
+                        if (!code) return;
+                        if (q.length > 0) {
+                            const match = lbl.textContent.toLowerCase().includes(q) || code.textContent.toLowerCase().includes(q);
+                            lbl.style.display = match ? 'block' : 'none';
+                            code.style.display = match ? 'block' : 'none';
+                            if (match) code.classList.add('highlighted');
+                            else code.classList.remove('highlighted');
+                        } else {
+                            lbl.style.display = 'block';
+                            code.style.display = 'block';
+                            code.classList.remove('highlighted');
+                        }
+                    });
+                });
+            });
+        }
+
+        // ════ BTS INFO DATA ════
+        const btsData = [
+            { bts: "Malek BTS",       device: "Huawei_Router",  ip: "10.20.127.205" },
+            { bts: "Malek BTS",       device: "Huawei_Switch_1",ip: "100.64.168.6" },
+            { bts: "Malek BTS",       device: "Huawei_Switch_2",ip: "100.64.168.2" },
+            { bts: "Malek BTS",       device: "Nexus",           ip: "100.64.167.14" },
+            { bts: "Malek BTS",       device: "JB_SW",           ip: "10.20.101.202" },
+            { bts: "Segun BTS",       device: "Huawei_Router",  ip: "10.20.127.110" },
+            { bts: "Segun BTS",       device: "Huawei_Switch",  ip: "100.64.168.22" },
+            { bts: "Segun BTS",       device: "Nexus",           ip: "10.66.9.250" },
+            { bts: "Eskaton BTS",     device: "Huawei_Router",  ip: "10.20.127.137" },
+            { bts: "Eskaton BTS",     device: "Switch",          ip: "10.67.51.3" },
+            { bts: "Eskaton BTS",     device: "Nexus",           ip: "10.66.1.250" },
+            { bts: "Dilkusha BTS",    device: "Huawei_Router",  ip: "10.20.127.82" },
+            { bts: "Dilkusha BTS",    device: "Switch_1",        ip: "10.48.2.82" },
+            { bts: "Dilkusha BTS",    device: "Switch_2",        ip: "10.48.2.83" },
+            { bts: "Wari BTS",        device: "Huawei_Router",  ip: "10.20.127.151" },
+            { bts: "Wari BTS",        device: "Huawei_Switch",  ip: "100.64.168.66" },
+            { bts: "Imamganj BTS",    device: "Huawei_Router",  ip: "10.20.127.199" },
+            { bts: "Imamganj BTS",    device: "Switch",          ip: "10.66.61.2" },
+            { bts: "Jatrabari BTS",   device: "Router",          ip: "10.20.127.113" },
+            { bts: "Jatrabari BTS",   device: "Huawei_Switch",  ip: "100.64.168.58" },
+            { bts: "Concord BTS",     device: "Huawei_Router",  ip: "10.20.127.190" },
+            { bts: "Concord BTS",     device: "Switch",          ip: "10.67.3.4" },
+            { bts: "Joypara BTS",     device: "Router",          ip: "10.20.224.76" },
+            { bts: "Joypara BTS",     device: "Switch_1",        ip: "10.67.1.202" },
+            { bts: "Joypara BTS",     device: "Switch_2",        ip: "10.59.1.30" },
+            { bts: "AhmedTower BTS",  device: "Huawei_Router",  ip: "10.20.127.202" },
+            { bts: "KarwanBazar BTS", device: "Huawei_Router",  ip: "10.20.127.204" },
+            { bts: "Banani28 BTS",    device: "Huawei_Router",  ip: "10.20.127.197" },
+            { bts: "Coloasia DC BTS", device: "Huawei_Router",  ip: "10.20.127.102" },
+            { bts: "Coloasia DC BDIX",device: "Huawei_Router",  ip: "10.20.127.101" },
+        ];
+
+        function getDeviceColor(device) {
+            const d = device.toUpperCase();
+            if (d.includes('ROUTER')) return { bg: 'rgba(239,68,68,0.12)', color: '#ef4444', border: 'rgba(239,68,68,0.3)' };
+            if (d.includes('NEXUS'))  return { bg: 'rgba(139,92,246,0.12)', color: '#a78bfa', border: 'rgba(139,92,246,0.3)' };
+            if (d.includes('SWITCH')) return { bg: 'rgba(56,189,248,0.12)', color: '#38bdf8', border: 'rgba(56,189,248,0.3)' };
+            return { bg: 'rgba(100,100,100,0.1)', color: '#aaa', border: 'rgba(100,100,100,0.2)' };
+        }
+
+        function renderBtsTable(data) {
+            const tbody = document.getElementById('bts-table-body');
+            if (!data.length) {
+                tbody.innerHTML = '<tr><td colspan="4" style="padding:32px;text-align:center;color:#a78bfa;font-family:\'Rajdhani\',sans-serif;font-size:1em;letter-spacing:1px;">No results found</td></tr>';
+                return;
+            }
+            let prevBts = null, rowNum = 0;
+            tbody.innerHTML = data.map((row, i) => {
+                rowNum++;
+                const isNewBts = row.bts !== prevBts;
+                prevBts = row.bts;
+                const dc = getDeviceColor(row.device);
+                const rowBg = i % 2 === 0 ? '#fafafa' : '#f0f4ff';
+                const topBorder = isNewBts ? 'border-top:2px solid rgba(251,191,36,0.25);' : '';
+                const btsDisplay = isNewBts
+                    ? `<span style="display:flex;align-items:center;gap:6px;font-family:'Orbitron',monospace;font-size:0.72em;font-weight:700;letter-spacing:1.5px;color:#1e1b4b;"><i class="material-icons" style="font-size:13px;color:#f59e0b;">cell_tower</i>${row.bts}</span>`
+                    : `<span style="color:rgba(0,0,0,0.12);font-size:0.7em;padding-left:18px;">└─</span>`;
+                return `<tr style="background:${rowBg};${topBorder}transition:background 0.15s;" onmouseover="this.style.background='rgba(167,139,250,0.1)'" onmouseout="this.style.background='${rowBg}'">
+                    <td style="padding:12px 18px;font-family:'Space Mono',monospace;font-size:0.75em;color:#c4b5fd;border-bottom:1px solid #e0e7ff;text-align:center;width:46px;">${rowNum}</td>
+                    <td style="padding:12px 18px;border-bottom:1px solid #e0e7ff;border-right:2px solid rgba(251,191,36,0.2);">${btsDisplay}</td>
+                    <td style="padding:12px 18px;border-bottom:1px solid #e0e7ff;">
+                        <span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;border:1px solid ${dc.border};background:${dc.bg};color:${dc.color};font-family:'Orbitron',monospace;font-size:0.65em;font-weight:700;letter-spacing:1px;">${row.device}</span>
+                    </td>
+                    <td style="padding:12px 18px;font-family:'Space Mono',monospace;font-size:0.88em;color:#1e1b4b;border-bottom:1px solid #e0e7ff;font-weight:700;">
+                        <span style="display:inline-flex;align-items:center;gap:6px;"><i class="material-icons" style="font-size:13px;color:#38bdf8;">lan</i>${row.ip}</span>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        let selectedBts = null;
+
+        function initBtsSearch() {
+            const sel = document.getElementById('bts-select-dropdown');
+            const uniqueBts = [...new Set(btsData.map(r => r.bts))];
+            uniqueBts.forEach(b => {
+                const opt = document.createElement('option');
+                opt.value = b;
+                opt.textContent = b;
+                sel.appendChild(opt);
+            });
+        }
+
+        function selectBtsFromDropdown(val) {
+            if (!val) {
+                renderBtsTable(btsData);
+                document.getElementById('bts-search-result-count').textContent = '';
+                return;
+            }
+            const filtered = btsData.filter(r => r.bts === val);
+            renderBtsTable(filtered);
+            document.getElementById('bts-search-result-count').textContent = `${filtered.length} device(s) found for "${val}"`;
+        }
+
+        function clearBtsSearch() {
+            document.getElementById('bts-select-dropdown').value = '';
+            document.getElementById('bts-search-result-count').textContent = '';
+            renderBtsTable(btsData);
+        }
+
+        function filterBtsTable() { /* kept for compat */ }
+
+        // ════ INIT ════
         document.addEventListener('DOMContentLoaded', () => {
+            renderBtsTable(btsData);
+            initBtsSearch();
             document.getElementById('olt-type').value  = 'cdata-gpon-16';
             document.getElementById('bandwidth').value = '100';
             generateOnuScript();
