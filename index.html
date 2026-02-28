@@ -87,23 +87,7 @@
         .docs-sub-btn-leaf:hover { color: #fff !important; }
         .docs-sub-btn-leaf.active { color: #00ff9d !important; }
 
-
-            padding: 10px 16px;
-            cursor: pointer;
-            font-family: 'Exo 2', sans-serif;
-            font-size: 0.9em;
-            color: #1e1b4b;
-            border-bottom: 1px solid #f3f4f6;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: background 0.15s;
-        }
-        .bts-suggestion:last-child { border-bottom: none; }
-        .bts-suggestion:hover { background: rgba(251,191,36,0.1); color: #d97706; font-weight: 600; }
-        .bts-suggestion::before { content: '📡'; font-size: 0.9em; }
-
-
+        /* ════ SIDEBAR ════ */
         .sidebar {
             width: 225px;
             min-width: 225px;
@@ -134,29 +118,30 @@
             pointer-events: none;
         }
 
+        /* ── Brand: icon removed, only text shown ── */
         .sidebar-brand {
             text-align: center;
             padding-bottom: 18px;
             margin-bottom: 18px;
             border-bottom: 1px solid rgba(167,139,250,0.15);
             flex-shrink: 0;
+            animation: brandFadeIn 0.7s ease forwards;
         }
-        .brand-icon {
-            width: 48px; height: 48px;
-            border-radius: 14px;
-            background: linear-gradient(135deg, #7c3aed, #2563eb);
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 10px;
-            box-shadow: 0 6px 20px rgba(124,58,237,0.45);
+        @keyframes brandFadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
-        .brand-icon i { color: #fff; font-size: 1.4em; }
+        /* Hide the brand icon completely */
+        .brand-icon { display: none; }
+
         .brand-title {
             font-family: 'Orbitron', monospace;
-            font-size: 1.05em;
+            font-size: 1.15em;
             font-weight: 900;
             letter-spacing: 5px;
             color: #a78bfa;
             text-shadow: 0 0 28px rgba(167,139,250,0.55);
+            margin-top: 6px;
         }
         .brand-sub {
             font-family: 'Rajdhani', sans-serif;
@@ -179,6 +164,7 @@
         }
         .nav-group { display: flex; flex-direction: column; gap: 7px; position: relative; }
 
+        /* ── Nav buttons with staggered slide-in animation ── */
         .nav-btn {
             background: transparent;
             border: 1px solid transparent;
@@ -187,14 +173,29 @@
             text-align: left;
             cursor: pointer;
             border-radius: 11px;
-            transition: all 0.22s ease;
             display: flex;
             align-items: center;
             gap: 12px;
             position: relative;
             overflow: hidden;
             width: 100%;
+            /* Animation base */
+            opacity: 0;
+            transform: translateX(-20px);
+            animation: navSlideIn 0.45s ease forwards;
+            transition: all 0.22s ease;
         }
+        /* Staggered delays for each nav button */
+        .nav-btn:nth-child(1) { animation-delay: 0.1s; }
+        .nav-btn:nth-child(2) { animation-delay: 0.2s; }
+        .nav-btn:nth-child(3) { animation-delay: 0.3s; }
+        .nav-btn:nth-child(5) { animation-delay: 0.4s; }
+
+        @keyframes navSlideIn {
+            from { opacity: 0; transform: translateX(-22px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
         .nav-btn-glow {
             position: absolute;
             left: 0; top: 0; bottom: 0;
@@ -204,14 +205,35 @@
             opacity: 0;
             transition: opacity 0.22s;
         }
-        .nav-btn:hover { background: rgba(167,139,250,0.07); color: #c4b5fd; border-color: rgba(167,139,250,0.15); }
+        .nav-btn:hover {
+            background: rgba(167,139,250,0.1);
+            color: #e0d4ff;
+            border-color: rgba(167,139,250,0.22);
+            transform: translateX(4px);
+            box-shadow: 0 2px 18px rgba(139,92,246,0.13);
+        }
         .nav-btn.active {
             background: var(--sb-active-bg);
             border-color: rgba(167,139,250,0.38);
             color: #c4b5fd;
             box-shadow: 0 2px 14px rgba(167,139,250,0.18);
+            transform: translateX(0);
         }
         .nav-btn.active .nav-btn-glow { opacity: 1; }
+
+        /* Pulse glow on active */
+        .nav-btn.active::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 11px;
+            background: rgba(167,139,250,0.06);
+            animation: navActivePulse 2.4s ease-in-out infinite;
+        }
+        @keyframes navActivePulse {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
 
         .nav-icon-wrap {
             width: 32px; height: 32px;
@@ -219,30 +241,39 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 1em;
             flex-shrink: 0;
-            transition: all 0.2s;
+            transition: all 0.25s;
         }
         .icon-v { background: rgba(139,92,246,0.15); color: #a78bfa; }
         .icon-s { background: rgba(56,189,248,0.15); color: #38bdf8; }
         .icon-g { background: rgba(0,255,157,0.12); color: #00ff9d; }
+        .nav-btn:hover .nav-icon-wrap { transform: scale(1.12) rotate(-4deg); }
         .nav-btn.active .icon-v { background: rgba(139,92,246,0.28); }
         .nav-btn.active .icon-s { background: rgba(56,189,248,0.28); }
         .nav-btn.active .icon-g { background: rgba(0,255,157,0.22); }
 
+        /* ── BOLD nav text ── */
         .nav-text .tab-name {
             font-family: 'Orbitron', monospace;
-            font-size: 0.76em;
-            font-weight: 700;
-            letter-spacing: 1.5px;
+            font-size: 0.8em;
+            font-weight: 900;
+            letter-spacing: 1.8px;
             display: block;
             line-height: 1.25;
+            color: rgba(224,215,255,0.95);
+            text-shadow: 0 0 12px rgba(167,139,250,0.3);
+        }
+        .nav-btn.active .nav-text .tab-name {
+            color: #e0d4ff;
+            text-shadow: 0 0 16px rgba(167,139,250,0.6);
         }
         .nav-text .tab-desc {
             font-family: 'Exo 2', sans-serif;
             font-size: 0.72em;
-            font-weight: 400;
-            opacity: 0.52;
+            font-weight: 600;
+            opacity: 0.55;
             display: block;
             margin-top: 2px;
+            letter-spacing: 0.3px;
         }
 
         /* OLT DOCS sub-nav in sidebar */
@@ -312,6 +343,7 @@
             padding-top: 16px;
             text-align: center;
             flex-shrink: 0;
+            animation: brandFadeIn 0.9s ease forwards;
         }
         .author-name {
             font-family: 'Orbitron', monospace;
@@ -819,8 +851,6 @@
         #app-onu .output-wrap { padding: 10px 13px; }
         #app-onu pre.output-area { font-size: 0.82em; min-height: 100px; line-height: 1.65; }
 
-
-
         /* ── Tablet (≤900px) ── */
         @media (max-width: 900px) {
             .sidebar { width: 190px; min-width: 190px; padding: 14px 10px; }
@@ -832,10 +862,8 @@
 
         /* ── Mobile (≤700px) ── */
         @media (max-width: 700px) {
-            /* Body becomes column: top-bar + content */
             body { flex-direction: column; height: 100dvh; overflow: hidden; }
 
-            /* ── SIDEBAR becomes top navigation bar ── */
             .sidebar {
                 width: 100%;
                 min-width: unset;
@@ -855,7 +883,6 @@
             .sidebar-footer { display: none; }
             .nav-section-label { display: none; }
 
-            /* Nav group = 4 equal tabs, no scroll */
             .nav-group {
                 flex-direction: row;
                 overflow: visible;
@@ -876,14 +903,17 @@
                 border-radius: 8px 8px 0 0;
                 min-width: 0;
                 text-align: center;
+                /* Reset slide-in for mobile: use fade instead */
+                animation: fadeUp 0.4s ease forwards;
+                transform: none;
             }
+            .nav-btn:hover { transform: none; }
             .nav-icon-wrap { width: 24px; height: 24px; font-size: 0.8em; border-radius: 7px; }
             .nav-text { display: flex; flex-direction: column; align-items: center; }
             .nav-text .tab-name { font-size: 0.5em; letter-spacing: 0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
             .nav-text .tab-desc { display: none; }
             .nav-btn-glow { width: 100%; height: 3px; left: 0; bottom: 0; top: auto; border-radius: 2px 2px 0 0; }
 
-            /* Docs sub-nav: dropdown panel below topbar */
             .docs-subnav {
                 position: absolute;
                 top: 100%;
@@ -912,7 +942,6 @@
             .docs-sub-btn { font-size: 0.72em !important; padding: 4px 7px !important; white-space: nowrap; }
             .docs-sub-btn-leaf { font-size: 0.68em !important; padding: 3px 7px !important; }
 
-            /* Main content fills remaining height */
             .main-content {
                 flex: 1;
                 overflow-y: auto;
@@ -923,17 +952,14 @@
             body.docs-mode .main-content { padding: 0; overflow: hidden; }
             body.docs-mode .docs-content-scroll { padding: 12px; }
 
-            /* App wrappers */
             .app-wrapper { max-width: 100%; }
             .app-header { margin-bottom: 10px; }
             .title-onu, .title-lp { font-size: 1.15em; letter-spacing: 3px; }
             .app-subtitle { font-size: 0.75em; letter-spacing: 2px; }
 
-            /* Cards */
             .card { padding: 12px; border-radius: 12px; }
             .card-grid { grid-template-columns: 1fr; gap: 10px; }
 
-            /* ONU ADD compact */
             .input-row { gap: 7px; margin-bottom: 7px; }
             .col-2 { grid-template-columns: 1fr 1fr; }
             .col-3 { grid-template-columns: 1fr 1fr 1fr; }
@@ -947,11 +973,9 @@
             textarea.output-area { font-size: 0.75em; height: 120px; }
             .output-wrap { padding: 10px 12px; }
 
-            /* BTS table hidden on mobile, card view shown */
             #bts-info-table { display: none; }
             #bts-cards-mobile { display: block !important; }
 
-            /* Docs */
             .docs-card { padding: 16px; }
             .docs-card-title { font-size: 1.1rem; }
             .docs-cmd-label { font-size: 0.82rem; padding: 6px 10px; margin-top: 16px; }
@@ -1024,9 +1048,7 @@
     <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="sidebar-brand">
-            <div class="brand-icon">
-                <i class="material-icons">router</i>
-            </div>
+            <!-- brand-icon div removed -->
             <div class="brand-title">OLT</div>
             <div class="brand-sub">Tools Suite</div>
         </div>
@@ -1712,7 +1734,6 @@ system\configure# pon on 1 1</code>
     <script>
         // ════ TAB SWITCHING ════
         function switchTab(id, btn) {
-            // Remove docs mode
             document.body.classList.remove('docs-mode');
             document.getElementById('docs-subnav').classList.remove('open');
             const mc = document.getElementById('main-content');
@@ -1735,7 +1756,6 @@ system\configure# pon on 1 1</code>
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
 
-            // Apply docs mode styling
             document.body.classList.add('docs-mode');
             const mc = document.getElementById('main-content');
             mc.style.overflow = 'hidden';
@@ -1743,17 +1763,13 @@ system\configure# pon on 1 1</code>
             mc.style.display = 'flex';
             mc.style.flexDirection = 'column';
 
-            // Show sub-nav
             document.getElementById('docs-subnav').classList.add('open');
-
-            // Init search
             setupAllSearches();
         }
 
         function toggleSubGroup(header) {
             const items = header.nextElementSibling;
             const isOpen = items.classList.contains('open');
-            // Close all siblings within same parent docs-subnav-items
             const parent = header.closest('.docs-subnav-items');
             if (parent) {
                 parent.querySelectorAll('.docs-sub-group-header').forEach(h => h.classList.remove('open'));
@@ -1765,11 +1781,9 @@ system\configure# pon on 1 1</code>
             }
         }
 
-        // ════ DOCS SUB-NAV ════
         function toggleDocsSub(header) {
             const items = header.nextElementSibling;
             const isOpen = items.classList.contains('open');
-            // Close all
             document.querySelectorAll('.docs-subnav-items').forEach(i => i.classList.remove('open'));
             document.querySelectorAll('.docs-subnav-header .sub-arrow').forEach(a => {
                 a.parentElement.classList.remove('open');
@@ -1789,7 +1803,6 @@ system\configure# pon on 1 1</code>
                 const scroll = document.getElementById('docs-content-scroll');
                 if (scroll) scroll.scrollTop = 0;
             }
-            // Clear old active sub btn
             document.querySelectorAll('.docs-sub-btn').forEach(b => b.classList.remove('active'));
             if (btn) btn.classList.add('active');
         }
@@ -2093,7 +2106,6 @@ system\configure# pon on 1 1</code>
                 return;
             }
 
-            // ── Desktop table ──
             let prevBts = null, rowNum = 0;
             tbody.innerHTML = data.map((row, i) => {
                 rowNum++;
@@ -2117,7 +2129,6 @@ system\configure# pon on 1 1</code>
                 </tr>`;
             }).join('');
 
-            // ── Mobile card view (grouped by BTS) ──
             const grouped = {};
             data.forEach(row => {
                 if (!grouped[row.bts]) grouped[row.bts] = [];
@@ -2141,8 +2152,6 @@ system\configure# pon on 1 1</code>
                 </div>`;
             }).join('');
         }
-
-        let selectedBts = null;
 
         function initBtsSearch() {
             const sel = document.getElementById('bts-select-dropdown');
