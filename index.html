@@ -118,7 +118,6 @@
             pointer-events: none;
         }
 
-        /* ── Brand: icon removed, only text shown ── */
         .sidebar-brand {
             text-align: center;
             padding-bottom: 18px;
@@ -131,7 +130,6 @@
             from { opacity: 0; transform: translateY(-10px); }
             to   { opacity: 1; transform: translateY(0); }
         }
-        /* Hide the brand icon completely */
         .brand-icon { display: none; }
 
         .brand-title {
@@ -164,7 +162,6 @@
         }
         .nav-group { display: flex; flex-direction: column; gap: 7px; position: relative; }
 
-        /* ── Nav buttons with staggered slide-in animation ── */
         .nav-btn {
             background: transparent;
             border: 1px solid transparent;
@@ -179,13 +176,11 @@
             position: relative;
             overflow: hidden;
             width: 100%;
-            /* Animation base */
             opacity: 0;
             transform: translateX(-20px);
             animation: navSlideIn 0.45s ease forwards;
             transition: all 0.22s ease;
         }
-        /* Staggered delays for each nav button */
         .nav-btn:nth-child(1) { animation-delay: 0.1s; }
         .nav-btn:nth-child(2) { animation-delay: 0.2s; }
         .nav-btn:nth-child(3) { animation-delay: 0.3s; }
@@ -221,7 +216,6 @@
         }
         .nav-btn.active .nav-btn-glow { opacity: 1; }
 
-        /* Pulse glow on active */
         .nav-btn.active::after {
             content: '';
             position: absolute;
@@ -251,7 +245,6 @@
         .nav-btn.active .icon-s { background: rgba(56,189,248,0.28); }
         .nav-btn.active .icon-g { background: rgba(0,255,157,0.22); }
 
-        /* ── BOLD nav text ── */
         .nav-text .tab-name {
             font-family: 'Orbitron', monospace;
             font-size: 0.8em;
@@ -368,7 +361,6 @@
             scrollbar-color: rgba(139,92,246,0.25) transparent;
         }
 
-        /* OLT DOCS mode - change main background */
         body.docs-mode .main-content {
             background: linear-gradient(135deg, #021B35 0%, #034B5D 50%, #067D7D 100%);
             background-attachment: fixed;
@@ -393,7 +385,6 @@
         }
         .app-wrapper.active { display: block; }
 
-        /* OLT Docs wrapper - full height */
         #app-docs {
             display: none;
             max-width: none;
@@ -407,7 +398,6 @@
             to   { opacity: 1; transform: translateY(0); }
         }
 
-        /* ── HEADERS ── */
         .app-header { text-align: center; margin-bottom: 18px; }
 
         .title-onu {
@@ -442,14 +432,12 @@
             margin-top: 3px;
         }
 
-        /* ── GRID ── */
         .card-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 18px;
         }
 
-        /* ── CARDS ── */
         .card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -501,7 +489,6 @@
             color: #4c1d95;
         }
 
-        /* ── FORM ── */
         .input-row {
             display: grid;
             gap: 11px;
@@ -560,7 +547,9 @@
             margin-top: 5px;
         }
 
-        /* ── BUTTONS ── */
+        /* Gem Map hidden state for Line Profile */
+        /* Gem Map field always visible */
+
         .btn-row {
             display: flex;
             gap: 10px;
@@ -590,7 +579,6 @@
         .btn-cpy { background: linear-gradient(135deg, #1d4ed8, #3b82f6); color: #fff; box-shadow: 0 3px 12px rgba(59,130,246,0.32); }
         .btn-cpy.copied { background: linear-gradient(135deg, #065f46, #10b981); }
 
-        /* ── OUTPUT ── */
         .output-wrap {
             background: var(--output-bg);
             border: 1.5px solid var(--output-border);
@@ -646,7 +634,6 @@
         }
         textarea.output-area::placeholder { color: rgba(167,139,250,0.28); font-weight: 400; font-style: italic; }
 
-        /* ── TOAST ── */
         .toast {
             position: fixed;
             bottom: 24px; left: 50%;
@@ -805,7 +792,6 @@
             box-shadow: 0 0 20px rgba(0,255,157,0.4);
         }
 
-        /* OLT IP Table */
         .docs-olt-table {
             width: 100%;
             border-collapse: separate;
@@ -834,7 +820,7 @@
         .docs-olt-table tr:hover { background-color: #f8fafc; }
         .docs-olt-table td:nth-child(2) { color: #008793; font-weight: 700; }
 
-        /* ── ONU ADD compact (no-scroll) ── */
+        /* ── ONU ADD compact ── */
         #app-onu { max-width: 1040px; margin: 0 auto; }
         #app-onu .app-header { margin-bottom: 30px; }
         #app-onu .app-header .title-onu { font-size: 1.85em; letter-spacing: 4px; }
@@ -903,7 +889,6 @@
                 border-radius: 8px 8px 0 0;
                 min-width: 0;
                 text-align: center;
-                /* Reset slide-in for mobile: use fade instead */
                 animation: fadeUp 0.4s ease forwards;
                 transform: none;
             }
@@ -991,7 +976,7 @@
             .nav-text .tab-name { font-size: 0.44em; }
         }
 
-        /* BTS mobile cards - hidden on desktop */
+        /* BTS mobile cards */
         #bts-cards-mobile { display: none; }
         .bts-mobile-site {
             background: #fff;
@@ -1048,7 +1033,6 @@
     <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="sidebar-brand">
-            <!-- brand-icon div removed -->
             <div class="brand-title">OLT</div>
             <div class="brand-sub">Tools Suite</div>
         </div>
@@ -1091,23 +1075,20 @@
                 </div>
             </button>
 
-            <!-- Docs Sub Nav (visible when docs active) -->
+            <!-- Docs Sub Nav -->
             <div class="docs-subnav" id="docs-subnav">
-                <!-- OLT IPs -->
                 <div class="docs-subnav-group">
                     <div class="docs-subnav-header active" onclick="showDocsContent('d_olt_ips', this)">
                         <span>📡 OLT IPs</span>
                     </div>
                 </div>
 
-                <!-- GPON OLT -->
                 <div class="docs-subnav-group">
                     <div class="docs-subnav-header" onclick="toggleDocsSub(this)">
                         <span>🔷 GPON OLT</span>
                         <span class="sub-arrow">▼</span>
                     </div>
                     <div class="docs-subnav-items">
-                        <!-- CDATA GPON 16 PORT -->
                         <div class="docs-sub-group">
                             <div class="docs-sub-group-header" onclick="toggleSubGroup(this)">
                                 <span>CDATA GPON 16</span>
@@ -1118,7 +1099,6 @@
                                 <button class="docs-sub-btn docs-sub-btn-leaf" onclick="showDocsContent('d_cdata_installation', this)">⚙️ Installation</button>
                             </div>
                         </div>
-                        <!-- CDATA GPON 8 PORT -->
                         <div class="docs-sub-group">
                             <div class="docs-sub-group-header" onclick="toggleSubGroup(this)">
                                 <span>CDATA GPON 8</span>
@@ -1129,7 +1109,6 @@
                                 <button class="docs-sub-btn docs-sub-btn-leaf" onclick="showDocsContent('d_gpon8_installation', this)">⚙️ Installation</button>
                             </div>
                         </div>
-                        <!-- VSOL & ATOP -->
                         <div class="docs-sub-group">
                             <div class="docs-sub-group-header" onclick="toggleSubGroup(this)">
                                 <span>VSOL / ATOP</span>
@@ -1143,14 +1122,12 @@
                     </div>
                 </div>
 
-                <!-- EPON OLT -->
                 <div class="docs-subnav-group">
                     <div class="docs-subnav-header" onclick="toggleDocsSub(this)">
                         <span>🟢 EPON OLT</span>
                         <span class="sub-arrow">▼</span>
                     </div>
                     <div class="docs-subnav-items">
-                        <!-- UTSTAR -->
                         <div class="docs-sub-group">
                             <div class="docs-sub-group-header" onclick="toggleSubGroup(this)">
                                 <span>EPON UTSTAR</span>
@@ -1161,7 +1138,6 @@
                                 <button class="docs-sub-btn docs-sub-btn-leaf" onclick="showDocsContent('d_utstar_installation', this)">⚙️ Installation</button>
                             </div>
                         </div>
-                        <!-- PHYHOME -->
                         <div class="docs-sub-group">
                             <div class="docs-sub-group-header" onclick="toggleSubGroup(this)">
                                 <span>EPON PHYHOME</span>
@@ -1172,7 +1148,6 @@
                                 <button class="docs-sub-btn docs-sub-btn-leaf" onclick="showDocsContent('d_phyhome_installation', this)">⚙️ Installation</button>
                             </div>
                         </div>
-                        <!-- FHNET -->
                         <div class="docs-sub-group">
                             <div class="docs-sub-group-header" onclick="toggleSubGroup(this)">
                                 <span>EPON FHNET</span>
@@ -1317,7 +1292,10 @@
                     </div>
                     <div class="input-row col-2">
                         <div class="field"><label for="profileId">Line Profile ID</label><input type="text" id="profileId" placeholder="e.g., 10"></div>
-                        <div class="field"><label for="gemMap">Gem Map</label><input type="number" id="gemMap" min="1" max="8" value="1"></div>
+                        <div class="field" id="lp-gemmap-field">
+                            <label for="gemMap">Gem Map</label>
+                            <input type="number" id="gemMap" min="1" max="8" value="1">
+                        </div>
                     </div>
                     <div class="section-chip"><i class="material-icons" style="font-size:0.95em">tag</i> VLAN IDs (up to 4)</div>
                     <div class="input-row col-2">
@@ -1687,7 +1665,6 @@ system\configure# pon on 1 1</code>
                 <div style="font-family:'Orbitron',monospace;font-size:1.7em;font-weight:900;letter-spacing:4px;background:linear-gradient(90deg,#f59e0b 0%,#ef4444 50%,#ec4899 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 2px 10px rgba(251,191,36,0.25));">BTS INFO</div>
                 <div class="app-subtitle">Router &amp; Switch IP Directory</div>
             </div>
-            <!-- Search Card -->
             <div class="card" style="margin-bottom:18px;border-top:3px solid #f59e0b;">
                 <div class="card-head">
                     <div class="ch-icon" style="background:rgba(251,191,36,0.15);color:#fbbf24;width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;">
@@ -1706,7 +1683,6 @@ system\configure# pon on 1 1</code>
                 </div>
                 <div id="bts-search-result-count" style="margin-top:8px;font-size:0.8em;color:#a78bfa;font-family:'Rajdhani',sans-serif;letter-spacing:0.5px;"></div>
             </div>
-            <!-- Table Card (desktop) -->
             <div class="card" style="border-top:3px solid #ef4444;padding:0;overflow:hidden;">
                 <div style="overflow-x:auto;">
                     <table id="bts-info-table" style="width:100%;border-collapse:collapse;font-family:'Exo 2',sans-serif;">
@@ -1718,14 +1694,12 @@ system\configure# pon on 1 1</code>
                                 <th style="padding:14px 18px;text-align:left;font-family:'Orbitron',monospace;font-size:0.68em;letter-spacing:2px;color:#fbbf24;font-weight:700;border-bottom:2px solid rgba(167,139,250,0.3);white-space:nowrap;">IP ADDRESS</th>
                             </tr>
                         </thead>
-                        <tbody id="bts-table-body">
-                        </tbody>
+                        <tbody id="bts-table-body"></tbody>
                     </table>
                 </div>
             </div>
-            <!-- Mobile card view (hidden on desktop) -->
             <div id="bts-cards-mobile"></div>
-        </div><!-- end app-bts -->
+        </div>
 
     </main>
 
@@ -1965,39 +1939,71 @@ system\configure# pon on 1 1</code>
             }).catch(() => showToast('Copy failed', 'error'));
         }
 
-        // ════ LINE PROFILE ════
+        // ════ LINE PROFILE (Updated logic from 2nd HTML) ════
+
+        // Show/hide Gem Map field based on OLT selection
+
         function generateLineProfile() {
-            const olt       = document.getElementById("oltName").value;
-            const profileId = document.getElementById("profileId").value.trim() || "10";
-            const vlans     = ['lp-vlan1','lp-vlan2','lp-vlan3','lp-vlan4']
-                                .map(id => document.getElementById(id).value.trim())
-                                .filter(v => v !== '');
-            let script = "";
-            if (olt === "vsol") {
-                let sp = '';
-                vlans.forEach((v, i) => sp += `service-port ${i+1} gemport 1 uservlan ${v} vlan ${v}\n`);
-                script = `profile line id ${profileId}\ntcont 1 name tcont_1 dba MAX_BW\ngemport 1 tcont 1\nservice 1 gemport 1 vlan ${vlans.join(",")}\n${sp}commit\nexit`;
-            } else if (olt === "cdata16") {
-                let gm = '';
-                vlans.forEach((v, i) => gm += `gem mapping 1 ${i+1} vlan ${v}\n`);
-                script = `ont-lineprofile gpon profile-id ${profileId}\ntcont 1 dba-profile-id 30\ngem add 1 tcont 1\n${gm}mapping-mode vlan\ncommit\nexit`;
-            } else if (olt === "cdata8") {
-                let gm = '';
-                vlans.forEach((v, i) => gm += `gem mapping 1 ${i+1} vlan ${v}\n`);
-                script = `ont-lineprofile profile-id ${profileId}\ntcont 1 dba-profile-id 30\ngem add 1 tcont 1\n${gm}mapping-mode vlan\ncommit\nexit`;
+            const olt       = document.getElementById('oltName').value;
+            const profileId = document.getElementById('profileId').value.trim() || '10';
+            const gemMap    = Math.min(Math.max(parseInt(document.getElementById('gemMap').value || '1'), 1), 8);
+
+            const vlans = ['lp-vlan1','lp-vlan2','lp-vlan3','lp-vlan4']
+                            .map(id => document.getElementById(id).value.trim())
+                            .filter(v => v !== '');
+
+            let script = '';
+
+            if (olt === 'vsol') {
+                // VSOL: tcont 1 name tcont_1 dba MAX_BW format
+                const vlanString = vlans.join(',');
+                let servicePorts = '';
+                vlans.forEach((v, i) => {
+                    servicePorts += `service-port ${i + 1} gemport 1 uservlan ${v} vlan ${v}\n`;
+                });
+                script = `profile line id ${profileId}\ntcont 1 name tcont_1 dba MAX_BW\ngemport 1 tcont 1\nservice 1 gemport 1 vlan ${vlanString}\n${servicePorts}commit\nexit`;
+
+            } else if (olt === 'cdata16') {
+                // CDATA 16-PON: gem mapping index starts from gemMap, increments per VLAN
+                let gemMappings = '';
+                vlans.forEach((vlan, idx) => {
+                    gemMappings += `gem mapping 1 ${gemMap + idx} vlan ${vlan}\n`;
+                });
+                script = `ont-lineprofile gpon profile-id ${profileId}\n` +
+                         `tcont 1 dba-profile-id 30\n` +
+                         `gem add 1 tcont 1\n` +
+                         `${gemMappings}` +
+                         `mapping-mode vlan\n` +
+                         `commit\n` +
+                         `exit`;
+
+            } else if (olt === 'cdata8') {
+                // CDATA 8-PON: gem mapping index starts from gemMap, increments per VLAN
+                let gemMappings = '';
+                vlans.forEach((vlan, idx) => {
+                    gemMappings += `gem mapping 1 ${gemMap + idx} vlan ${vlan}\n`;
+                });
+                script = `ont-lineprofile profile-id ${profileId}\n` +
+                         `tcont 1 dba-profile-id 30\n` +
+                         `gem add 1 tcont 1\n` +
+                         `${gemMappings}` +
+                         `mapping-mode vlan\n` +
+                         `commit\n` +
+                         `exit`;
             }
-            document.getElementById("lp-output").value = script;
+
+            document.getElementById('lp-output').value = script;
         }
 
         function clearLPFields() {
             ['profileId','lp-vlan1','lp-vlan2','lp-vlan3','lp-vlan4'].forEach(id => document.getElementById(id).value = '');
-            document.getElementById("gemMap").value = "1";
-            document.getElementById("lp-output").value = "";
+            document.getElementById('gemMap').value = '1';
+            document.getElementById('lp-output').value = '';
         }
 
         function copyLPScript() {
-            const output = document.getElementById("lp-output");
-            if (!output.value.trim()) { showToast("No script to copy!", "error"); return; }
+            const output = document.getElementById('lp-output');
+            if (!output.value.trim()) { showToast('No script to copy!', 'error'); return; }
             const btn = document.getElementById('lp-copy-btn');
             const ct  = document.getElementById('lp-copy-text');
             navigator.clipboard.writeText(output.value).then(() => {
@@ -2183,8 +2189,6 @@ system\configure# pon on 1 1</code>
             renderBtsTable(btsData);
         }
 
-        function filterBtsTable() { /* kept for compat */ }
-
         // ════ INIT ════
         document.addEventListener('DOMContentLoaded', () => {
             renderBtsTable(btsData);
@@ -2192,6 +2196,7 @@ system\configure# pon on 1 1</code>
             document.getElementById('olt-type').value  = 'cdata-gpon-16';
             document.getElementById('bandwidth').value = '100';
             generateOnuScript();
+            // Initialize gem map visibility
         });
     </script>
 </body>
