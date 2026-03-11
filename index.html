@@ -547,9 +547,6 @@
             margin-top: 5px;
         }
 
-        /* Gem Map hidden state for Line Profile */
-        /* Gem Map field always visible */
-
         .btn-row {
             display: flex;
             gap: 10px;
@@ -1234,6 +1231,7 @@
                                 <option value="100">100 / 100 Mbps</option>
                                 <option value="160">160 / 160 Mbps</option>
                                 <option value="210">210 / 210 Mbps</option>
+                                <option value="255">255 / 255 Mbps</option>
                             </select>
                         </div>
                     </div>
@@ -1802,6 +1800,12 @@ system\configure# pon on 1 1</code>
             const gemId       = document.getElementById('gem-id').value || '1';
             const vlanList    = ['vlan1','vlan2','vlan3','vlan4'].map(id => document.getElementById(id).value.trim());
 
+            // ── Bandwidth helpers ──
+            // VSOL / UTStarcom / FH-NET use Kbps values
+            // 255 Mbps is a special case: uses 512000 Kbps (vendor convention)
+            // All other values use bandwidth * 1024
+            const bwKbps = bandwidth === 255 ? 512000 : bandwidth * 1024;
+
             let script = '', srvProfileId = '';
             if (oltType.startsWith('cdata-gpon')) srvProfileId = onuPorts === 4 ? '1' : '4';
 
@@ -1821,9 +1825,8 @@ system\configure# pon on 1 1</code>
                     for (let i = 1; i <= onuPorts; i++) {
                         const v = vlanList[i-1];
                         if (v) {
-                            const bk = bandwidth * 1024;
-                            script += `onu ${onuId} eth ${i} upstream-rate-limit cir ${bk} pir ${bk}\n`;
-                            script += `onu ${onuId} eth ${i} downstream-rate-limit cir ${bk} pir ${bk}\n`;
+                            script += `onu ${onuId} eth ${i} upstream-rate-limit cir ${bwKbps} pir ${bwKbps}\n`;
+                            script += `onu ${onuId} eth ${i} downstream-rate-limit cir ${bwKbps} pir ${bwKbps}\n`;
                         }
                     }
                     script += `exit\n`;
@@ -1879,7 +1882,7 @@ system\configure# pon on 1 1</code>
                     script += `interface epon-olt ${slot}/${pon}\nonu ${onuId}\ndba-sla mac ${mf}\ndba-sla mac-limit 10\n`;
                     for (let i = 1; i <= onuPorts; i++) {
                         if (vlanList[i-1]) {
-                            script += `remote-mgmt eth ${i} admin enable\nremote-mgmt eth ${i} vlan-mode tag ${vlanList[i-1]} 8100\npolicing upstream pir-mark-no-drop\npolicing downstream pir-mark-no-drop\nshaping conform-to-pir\ndba-sla upstream maximum-bandwidth ${bandwidth*1024} Kbps\ndba-sla upstream max-burst 512 Kbps\ndba-sla downstream maximum-bandwidth ${bandwidth*1024} Kbps\ndba-sla downstream max-burst 512 Kbps\n`;
+                            script += `remote-mgmt eth ${i} admin enable\nremote-mgmt eth ${i} vlan-mode tag ${vlanList[i-1]} 8100\npolicing upstream pir-mark-no-drop\npolicing downstream pir-mark-no-drop\nshaping conform-to-pir\ndba-sla upstream maximum-bandwidth ${bwKbps} Kbps\ndba-sla upstream max-burst 512 Kbps\ndba-sla downstream maximum-bandwidth ${bwKbps} Kbps\ndba-sla downstream max-burst 512 Kbps\n`;
                         } else script += `remote-mgmt eth ${i} admin disable\n`;
                     }
                     script += `exit\nexit\nexit\nconfigure management\nsave\n`;
@@ -1894,7 +1897,7 @@ system\configure# pon on 1 1</code>
                         } else script += `onu-shutdown\n`;
                         script += `exit\n`;
                     }
-                    script += `onu-bandwidth upstream fir 0 cir 0 pir ${bandwidth*1024}\nonu-bandwidth downstream fir 0 cir 0 pir ${bandwidth*1024}\nonu-bandwidth shaper pir\nexit\nexit\ncopy running-config startup-config\ny\n`;
+                    script += `onu-bandwidth upstream fir 0 cir 0 pir ${bwKbps}\nonu-bandwidth downstream fir 0 cir 0 pir ${bwKbps}\nonu-bandwidth shaper pir\nexit\nexit\ncopy running-config startup-config\ny\n`;
                     break;
                 }
                 case 'phyhome': {
@@ -1939,10 +1942,7 @@ system\configure# pon on 1 1</code>
             }).catch(() => showToast('Copy failed', 'error'));
         }
 
-        // ════ LINE PROFILE (Updated logic from 2nd HTML) ════
-
-        // Show/hide Gem Map field based on OLT selection
-
+        // ════ LINE PROFILE ════
         function generateLineProfile() {
             const olt       = document.getElementById('oltName').value;
             const profileId = document.getElementById('profileId').value.trim() || '10';
@@ -1955,7 +1955,6 @@ system\configure# pon on 1 1</code>
             let script = '';
 
             if (olt === 'vsol') {
-                // VSOL: tcont 1 name tcont_1 dba MAX_BW format
                 const vlanString = vlans.join(',');
                 let servicePorts = '';
                 vlans.forEach((v, i) => {
@@ -1964,7 +1963,6 @@ system\configure# pon on 1 1</code>
                 script = `profile line id ${profileId}\ntcont 1 name tcont_1 dba MAX_BW\ngemport 1 tcont 1\nservice 1 gemport 1 vlan ${vlanString}\n${servicePorts}commit\nexit`;
 
             } else if (olt === 'cdata16') {
-                // CDATA 16-PON: gem mapping index starts from gemMap, increments per VLAN
                 let gemMappings = '';
                 vlans.forEach((vlan, idx) => {
                     gemMappings += `gem mapping 1 ${gemMap + idx} vlan ${vlan}\n`;
@@ -1978,7 +1976,6 @@ system\configure# pon on 1 1</code>
                          `exit`;
 
             } else if (olt === 'cdata8') {
-                // CDATA 8-PON: gem mapping index starts from gemMap, increments per VLAN
                 let gemMappings = '';
                 vlans.forEach((vlan, idx) => {
                     gemMappings += `gem mapping 1 ${gemMap + idx} vlan ${vlan}\n`;
@@ -2196,7 +2193,6 @@ system\configure# pon on 1 1</code>
             document.getElementById('olt-type').value  = 'cdata-gpon-16';
             document.getElementById('bandwidth').value = '100';
             generateOnuScript();
-            // Initialize gem map visibility
         });
     </script>
 </body>
